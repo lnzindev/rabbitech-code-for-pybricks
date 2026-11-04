@@ -19,9 +19,20 @@
 
 ## 🤖 Sobre o projeto
 
-O **Rabbitech Pybricks Autopilot** é um projeto de programação e controle robótico para o LEGO SPIKE Prime, desenvolvido por **Luiz, Arthur, Nayon, Eduarda, Fernanda e Nayane**, em João Pessoa, Paraíba.
+O **Rabbitech Pybricks Autopilot** é um projeto de programação e controle robótico para o LEGO SPIKE Prime, desenvolvido por **Luiz, Arthur, Nayon, Eduarda, Fernanda e Nayane**, na Escola Municipal Antônio Santos Coelho Neto, localizada na Praia da Penha, em João Pessoa, Paraíba.
 
 A proposta é transformar estratégias e ideias em movimentos reais: controlar motores, executar rotinas, realizar giros com auxílio da IMU e registrar dados para aprimorar o comportamento do robô.
+
+### 🌊 Nossa escola e nossa comunidade
+
+A Escola Municipal Antônio Santos Coelho Neto fica na **Praia da Penha**, em João Pessoa. A escola faz parte de uma comunidade tradicional pesqueira, cuja história e modo de vida estão ligados à pesca artesanal, à mariscagem, ao mar, aos manguezais e ao Rio do Cabelo. Em 2026, o Ministério Público Federal registrou também o reconhecimento da identidade quilombola da comunidade, somada às identidades pesqueira e ribeirinha.
+
+Essa ligação com o território inspira nossos projetos: pesquisar problemas reais do entorno, cuidar da natureza e desenvolver tecnologia que tenha utilidade para a comunidade. A robótica aqui não está separada do lugar onde estudamos: ela nasce também da observação da Penha e de seus desafios.
+
+<div align="center">
+<img src="https://www.mpf.mp.br/o-mpf/unidades/pr-pb/noticias/mpf-pede-demarcacao-do-territorio-tradicional-quilombola-da-praia-da-penha-em-joao-pessoa-pb/%40%40images/image-800-22871c7ec751fe9e893833d355bb3098.jpeg" alt="Vista da comunidade tradicional pesqueira da Praia da Penha, em João Pessoa" width="92%" />
+<sub>Praia da Penha — foto: Aline Silva / Ministério Público Federal.</sub>
+</div>
 
 Este repositório faz parte da trajetória de experimentação em robótica da Rabbitech. Mais do que reunir códigos, ele documenta o desenvolvimento de soluções, testes e melhorias.
 
@@ -45,6 +56,11 @@ Registros oficiais das equipes em competições e atividades de preparação, pu
 <div align="center">
 
 **Rabbitech — Explore** · **Rabbitech Future — Future Edition**
+
+<div align="center">
+<img src="https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/09/IMG_20260930_123214_HDR-771x1024.jpg" alt="Estudantes da Escola Municipal Antônio Santos Coelho Neto em visita técnica ao Parque Arruda Câmara durante a preparação dos projetos de robótica" width="62%" />
+<sub>Visita técnica e pesquisa de campo para preparação dos projetos — Prefeitura de João Pessoa, setembro de 2026.</sub>
+</div>
 
 <sub>Fotografias: Prefeitura de João Pessoa / Secretaria de Educação.</sub>
 
