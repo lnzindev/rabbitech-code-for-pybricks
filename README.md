@@ -1,134 +1,134 @@
 <div align="center">
 
-# RABBITECH · PYBRICKS AUTOPILOT
+<img src="assets/rabbitech-banner.svg" alt="Rabbitech — Robótica, programação e inovação em João Pessoa, Paraíba" width="100%" />
 
-**Robotics · LEGO SPIKE Prime · Pybricks · Embedded Systems**
+### ROBÓTICA • PROGRAMAÇÃO • ENGENHARIA • INOVAÇÃO
 
-A modular control system for the Rabbitech robotics project, built to run eight sequential routines on a LEGO SPIKE Prime hub.
+**Um projeto de Luiz Narciso, desenvolvido em João Pessoa — Paraíba, Brasil.**
 
-[Source code](https://github.com/lnzindev/rabbitech-code-for-pybricks) · [Developer profile](https://github.com/lnzindev) · [Rabbitech projects](https://github.com/lnzindev?tab=repositories)
+[Repositório](https://github.com/lnzindev/rabbitech-code-for-pybricks) · [Perfil do desenvolvedor](https://github.com/lnzindev) · [Outros projetos Rabbitech](https://github.com/lnzindev?tab=repositories)
 
-![Python](https://img.shields.io/badge/Python-Pybricks%20MicroPython-171522?style=flat-square&logo=python&logoColor=3776ab)
-![Platform](https://img.shields.io/badge/Platform-LEGO%20SPIKE%20Prime-171522?style=flat-square)
-![Control](https://img.shields.io/badge/Control-Adaptive%20PID-171522?style=flat-square)
-![Status](https://img.shields.io/badge/Project-Experimental-171522?style=flat-square)
+![Python](https://img.shields.io/badge/Python-Pybricks-101b2d?style=for-the-badge&logo=python&logoColor=4cc9f0)
+![LEGO](https://img.shields.io/badge/LEGO-SPIKE%20Prime-101b2d?style=for-the-badge)
+![Robótica](https://img.shields.io/badge/Área-Robótica-101b2d?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Em%20desenvolvimento-101b2d?style=for-the-badge)
 
 </div>
 
 ---
 
-## About the project
+## 🤖 Sobre o projeto
 
-**Rabbitech Pybricks Autopilot** is an experimental robotics control system developed for LEGO SPIKE Prime using Pybricks MicroPython.
+O **Rabbitech Pybricks Autopilot** é um projeto de programação e controle robótico para o LEGO SPIKE Prime, desenvolvido por **Luiz Narciso**, em João Pessoa, Paraíba.
 
-The project separates reusable movement and motor-control functions from the routines that execute each mission. A central controller waits for the left hub button before starting each routine, allowing the robot to run up to eight programmed sequences in order.
+A proposta é transformar estratégias e ideias em movimentos reais: controlar motores, executar rotinas, realizar giros com auxílio da IMU e registrar dados para aprimorar o comportamento do robô.
 
-The code is part of the hands-on robotics work developed around the **Rabbitech** team.
+Este repositório faz parte da trajetória de experimentação em robótica da Rabbitech. Mais do que reunir códigos, ele documenta o desenvolvimento de soluções, testes e melhorias.
 
-## Main features
+## ⚡ Recursos do sistema
 
-- **Sequential controller:** manages eight routines through a single entry point.
-- **Adaptive movement:** uses heading feedback and a PID-style correction loop to keep the robot on course.
-- **Motion profiles:** supports acceleration and deceleration ramps.
-- **Turning control:** includes two-wheel and one-wheel turning routines.
-- **Motor monitoring:** detects motors that stop responding during movement.
-- **Persistent learning data:** stores movement statistics and adaptive correction values in hub storage.
-- **Gripper control:** provides independent commands for the left and right grippers.
+- **Controlador sequencial:** organiza até oito rotinas em uma única execução.
+- **Controle de direção:** utiliza a IMU para corrigir o alinhamento durante os deslocamentos.
+- **Movimento adaptativo:** mantém valores de correção que podem ser reaproveitados em execuções futuras.
+- **Rampas de velocidade:** permite aceleração e desaceleração progressivas.
+- **Sistema de giros:** oferece giros com duas rodas ou com apenas uma roda.
+- **Monitoramento dos motores:** identifica situações em que um motor deixa de responder durante o movimento.
+- **Memória persistente:** registra estatísticas e parâmetros adaptativos no armazenamento do hub.
+- **Controle das garras:** permite comandar os mecanismos esquerdo e direito separadamente.
 
-## Repository structure
+## 🧩 Organização dos arquivos
 
-| File | Responsibility |
+| Arquivo | Função |
 |---|---|
-| `main.py` | Main program. Runs the eight routines in sequence. |
-| `base.py` | Shared hardware setup, movement functions, turning, grippers and adaptive memory. |
-| `memoria.py` | Basic test script for saving and restoring learning data. |
-| `saida_1.py` – `saida_8.py` | Individual routines executed by the main controller. |
+| `main.py` | Controlador principal. Coordena as oito rotinas. |
+| `base.py` | Configuração do hardware, movimentos, giros, garras e memória adaptativa. |
+| `memoria.py` | Script de teste para salvar e recuperar os dados de aprendizado. |
+| `saida_1.py` a `saida_8.py` | Rotinas individuais executadas pelo controlador. |
 
-## Hardware configuration
+## 🔌 Configuração do robô
 
-The current configuration in `base.py` uses the following ports:
+A configuração atual de `base.py` utiliza as seguintes portas:
 
-| Port | Component |
+| Porta | Componente |
 |---|---|
-| C | Left gripper motor |
-| D | Right gripper motor |
-| E | Left drive motor |
-| F | Right drive motor |
+| C | Motor da garra esquerda |
+| D | Motor da garra direita |
+| E | Motor de tração esquerdo |
+| F | Motor de tração direito |
 
-**Wheel diameter:** 56 mm  
-**Hub:** LEGO SPIKE Prime  
-**Runtime:** Pybricks MicroPython 3.6.1 (as specified in the source code)
+| Parâmetro | Configuração atual |
+|---|---|
+| Hub | LEGO SPIKE Prime |
+| Diâmetro das rodas | 56 mm |
+| Ambiente | Pybricks MicroPython 3.6.1 |
 
-Check the physical motor connections and wheel orientation before running the robot. If your build uses different ports or directions, update the hardware configuration in `base.py`.
+Confira as conexões físicas, o sentido de rotação e a montagem antes de executar o programa. Caso o robô utilize outra configuração, ajuste as definições no arquivo `base.py`.
 
-## How the controller works
+## 🧠 Como funciona
 
-1. The hub initializes the shared hardware configuration and loads saved adaptive data.
-2. The controller waits for the IMU to become ready and stops the drive motors.
-3. The hub displays the number of the next routine.
-4. Press and release the **left button** to start that routine.
-5. After execution, the controller stops the motors and checks the routine's return value.
-6. If a routine returns `False`, the sequence is interrupted and the hub displays an error. Otherwise, the next routine is prepared.
-7. When all routines finish, the hub displays `FIM`.
+1. O hub inicializa os motores e tenta recuperar os dados adaptativos salvos.
+2. O controlador aguarda a IMU ficar pronta e interrompe o movimento dos motores de tração.
+3. O visor mostra o número da próxima saída.
+4. O usuário aperta e solta o **botão esquerdo** do hub para iniciar a rotina.
+5. A rotina é executada e, ao terminar, o controlador para os motores.
+6. Se uma rotina retornar `False`, a sequência é interrompida e o visor mostra um erro.
+7. Se todas forem concluídas, o visor apresenta `FIM`.
 
-## Running the program
+## ▶️ Como executar
 
-1. Install a Pybricks-compatible firmware on the LEGO SPIKE Prime hub.
-2. Open the project files in the Pybricks code editor.
-3. Transfer the required Python files to the hub.
-4. Run **`main.py`**. It is the entry point and imports the other modules.
-5. Place the robot in a safe test area and trigger each routine using the left hub button.
+1. Prepare o hub LEGO SPIKE Prime com firmware compatível com Pybricks.
+2. Abra os arquivos no editor de código do Pybricks.
+3. Transfira os módulos necessários para o hub.
+4. Execute **`main.py`**, que é o ponto de entrada do projeto.
+5. Posicione o robô em uma área segura e use o botão esquerdo para iniciar cada rotina.
 
-> **Important:** Test each routine individually with the robot lifted or in a clear, controlled area before running the complete sequence. Motor direction, attachment position, wheel grip and mission layout can change the robot's behavior.
+> **Segurança:** teste cada rotina separadamente, em uma área livre e controlada. Verifique a direção dos motores, a fixação das peças e o movimento das garras antes de executar a sequência completa.
 
-## Configuration
+## 🛠️ Personalização
 
-Movement settings and hardware parameters are centralized in `base.py`, including:
+As configurações principais estão centralizadas em `base.py`:
 
-- Drive and turning speeds.
-- Gripper speed and target angles.
-- Wheel diameter.
-- Heading correction constants.
-- Turning tolerance and timeout.
-- Adaptive memory limits.
+- Velocidades de deslocamento e giro.
+- Velocidade e ângulos das garras.
+- Diâmetro das rodas.
+- Parâmetros de correção de direção.
+- Tolerância e tempo limite dos giros.
+- Limites da memória adaptativa.
 
-Change these values carefully and validate them on the physical robot.
+Faça alterações gradualmente e valide cada mudança no robô físico.
 
-## Current limitations
+## 🚧 Estado atual e próximos passos
 
-- The eight routine files currently contain the same example movement sequence. Replace each example with its intended mission routine before competition use.
-- The project has not been documented here as competition-validated hardware.
-- Adaptive memory stores correction values and movement counters; it does not automatically guarantee better results on every surface or robot configuration.
-- Always verify the behavior of the robot after changing code or hardware.
+O projeto está em desenvolvimento. No estado atual do repositório, os arquivos `saida_1.py` a `saida_8.py` ainda contêm a mesma sequência de movimentos de exemplo. Cada arquivo precisa receber sua rotina definitiva antes de ser utilizado em uma apresentação ou competição.
 
-## Project philosophy
+Outros objetivos de evolução:
 
-This repository follows the same approach used across my projects: build, test, understand what fails, and improve through iteration.
+- Documentar cada rotina e sua missão correspondente.
+- Registrar resultados dos testes de movimento.
+- Melhorar a calibração dos giros e deslocamentos.
+- Evoluir o sistema de memória adaptativa.
+- Manter o código modular, legível e fácil de manter.
 
-Robotics connects software to the physical world. Every movement is a real test of the code.
+## 🏆 Robótica em João Pessoa
+
+A robótica educacional de João Pessoa tem conquistado espaço em competições e projetos de tecnologia. Em fevereiro de 2026, a Prefeitura de João Pessoa publicou os resultados da etapa regional da FIRST LEGO League Challenge 2025/2026, destacando a equipe **Tech Scorpions**, da Escola Municipal Antônio Santos Coelho Neto, com o 1º lugar em Core Values e o 3º lugar em Desempenho do Robô.
+
+Luiz Narciso dos Santos Oliveira aparece entre os integrantes da equipe na publicação oficial. Essa trajetória representa o espírito que inspira este projeto: colaboração, criatividade, programação e vontade de construir soluções.
+
+**Fonte:** [Prefeitura de João Pessoa — resultados da FIRST LEGO League Challenge 2025/2026](https://www.joaopessoa.pb.gov.br/noticias/rede-municipal-de-ensino-de-joao-pessoa-e-a-unica-do-brasil-a-conquistar-tres-categorias-da-first-lego-league-challenge-2025-2026/).
 
 ---
 
-## Sobre o projeto
-
-O **Rabbitech Pybricks Autopilot** é um sistema experimental de controle para LEGO SPIKE Prime, desenvolvido com Pybricks MicroPython.
-
-O projeto separa as funções reutilizáveis de movimento e controle dos motores das rotinas individuais. Um controlador central organiza até oito saídas em sequência, aguardando o botão esquerdo do hub para iniciar cada uma.
-
-### Objetivos
-
-- Centralizar o controle dos motores e das garras.
-- Melhorar a precisão dos deslocamentos usando a IMU.
-- Aplicar rampas de aceleração e desaceleração.
-- Registrar dados de movimentos concluídos e falhas.
-- Manter o código modular e fácil de evoluir.
-
-**Desenvolvido como parte dos experimentos de robótica da Rabbitech.**
-
 <div align="center">
 
-**RABBITECH · BUILD · TEST · IMPROVE**
+## RABBITECH
 
-[GitHub](https://github.com/lnzindev) · [Repositório](https://github.com/lnzindev/rabbitech-code-for-pybricks)
+**Da ideia ao código. Do código ao movimento.**
+
+Desenvolvido por **Luiz Narciso** · João Pessoa, Paraíba, Brasil.
+
+[GitHub](https://github.com/lnzindev) · [Ver repositório](https://github.com/lnzindev/rabbitech-code-for-pybricks)
+
+<sub>Construir. Testar. Aprender. Evoluir.</sub>
 
 </div>
