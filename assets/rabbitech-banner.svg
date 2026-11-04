@@ -1,73 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="460" viewBox="0 0 1600 460" role="img" aria-labelledby="title desc">
-  <title id="title">Rabbitech — Robótica e tecnologia</title>
-  <desc id="desc">Banner tecnológico animado da Rabbitech, equipe de robótica de João Pessoa, Paraíba.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="500" viewBox="0 0 1600 500" role="img" aria-labelledby="title desc">
+  <title id="title">Rabbitech — tecnologia que transforma ideias em movimento</title>
+  <desc id="desc">Identidade visual animada da Rabbitech, projeto de robótica e programação da Praia da Penha, João Pessoa, Paraíba.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#080d1b"/>
-      <stop offset=".55" stop-color="#101d36"/>
-      <stop offset="1" stop-color="#071522"/>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050914"/>
+      <stop offset=".48" stop-color="#0a1830"/>
+      <stop offset="1" stop-color="#10102a"/>
     </linearGradient>
-    <linearGradient id="neon" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#36e5ff"/>
-      <stop offset=".5" stop-color="#8b7cff"/>
-      <stop offset="1" stop-color="#ffbd59"/>
-      <animate attributeName="x1" values="0;1;0" dur="8s" repeatCount="indefinite"/>
-      <animate attributeName="x2" values="1;0;1" dur="8s" repeatCount="indefinite"/>
+    <linearGradient id="spectrum" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#42e8ff"/>
+      <stop offset=".48" stop-color="#8b7cff"/>
+      <stop offset="1" stop-color="#ffb65e"/>
+      <animate attributeName="x1" values="0;1;0" dur="12s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="1;0;1" dur="12s" repeatCount="indefinite"/>
     </linearGradient>
-    <radialGradient id="glow">
-      <stop offset="0" stop-color="#24d9ff" stop-opacity=".24"/>
-      <stop offset="1" stop-color="#24d9ff" stop-opacity="0"/>
+    <radialGradient id="aura">
+      <stop offset="0" stop-color="#2bdcff" stop-opacity=".25"/>
+      <stop offset=".55" stop-color="#6c6cff" stop-opacity=".10"/>
+      <stop offset="1" stop-color="#6c6cff" stop-opacity="0"/>
     </radialGradient>
-    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
-      <path d="M42 0H0V42" fill="none" stroke="#7db8e8" stroke-opacity=".09" stroke-width="1"/>
-      <circle cx="0" cy="0" r="1.5" fill="#65dfff" opacity=".25"/>
+    <pattern id="microgrid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#9bd7ff" stroke-opacity=".075" stroke-width="1"/>
+      <circle cx="0" cy="0" r="1.2" fill="#7deaff" opacity=".2"/>
     </pattern>
-    <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="smallGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
   </defs>
-  <rect width="1600" height="460" rx="28" fill="url(#bg)"/>
-  <rect width="1600" height="460" rx="28" fill="url(#grid)"/>
-  <ellipse cx="1280" cy="220" rx="390" ry="260" fill="url(#glow)"/>
-  <ellipse cx="1280" cy="220" rx="250" ry="120" fill="#4e67ff" opacity=".08" filter="url(#blur)"/>
-  <g fill="none" stroke="url(#neon)" stroke-width="2" opacity=".65">
-    <path d="M0 350H230l48-48h120l44-44h120"/>
-    <path d="M1040 0v75l48 48h90l45 45h377"/>
-    <path d="M1180 460v-55l55-55h110l40-40h215"/>
-    <path d="M0 92h130l38 38h75"/>
+
+  <rect width="1600" height="500" rx="30" fill="url(#background)"/>
+  <rect width="1600" height="500" rx="30" fill="url(#microgrid)"/>
+  <ellipse cx="1250" cy="250" rx="430" ry="330" fill="url(#aura)"/>
+  <ellipse cx="1270" cy="250" rx="190" ry="160" fill="#36cfff" opacity=".08" filter="url(#softGlow)"/>
+
+  <!-- Circuit paths -->
+  <g fill="none" stroke="url(#spectrum)" stroke-width="2" opacity=".5" stroke-linecap="round">
+    <path d="M0 110H120L165 155H260"/>
+    <path d="M0 390H185L230 345H330L370 305H430"/>
+    <path d="M900 0V55L950 105H1040"/>
+    <path d="M1190 500V440L1240 390H1380L1420 350H1600"/>
+    <path d="M1500 0V62L1455 107H1390"/>
+    <path d="M740 500V455L790 405H890"/>
   </g>
-  <g fill="#54e5ff">
-    <circle cx="230" cy="350" r="4"><animate attributeName="opacity" values=".25;1;.25" dur="2.4s" repeatCount="indefinite"/></circle>
-    <circle cx="440" cy="258" r="4"><animate attributeName="opacity" values="1;.2;1" dur="2.8s" repeatCount="indefinite"/></circle>
-    <circle cx="1040" cy="75" r="4"><animate attributeName="opacity" values=".2;1;.2" dur="2s" repeatCount="indefinite"/></circle>
-    <circle cx="1385" cy="350" r="4"><animate attributeName="opacity" values="1;.25;1" dur="3s" repeatCount="indefinite"/></circle>
+  <g fill="#8beeff">
+    <circle cx="260" cy="155" r="4"><animate attributeName="opacity" values=".25;1;.25" dur="2.6s" repeatCount="indefinite"/></circle>
+    <circle cx="430" cy="305" r="4"><animate attributeName="opacity" values="1;.2;1" dur="3.1s" repeatCount="indefinite"/></circle>
+    <circle cx="1040" cy="105" r="4"><animate attributeName="opacity" values=".2;1;.2" dur="2.2s" repeatCount="indefinite"/></circle>
+    <circle cx="1380" cy="390" r="4"><animate attributeName="opacity" values="1;.2;1" dur="2.8s" repeatCount="indefinite"/></circle>
   </g>
-  <g transform="translate(1190 92)" stroke="url(#neon)" fill="none" stroke-width="3">
-    <circle cx="150" cy="130" r="108" opacity=".32"/>
-    <circle cx="150" cy="130" r="82" stroke-dasharray="7 12" opacity=".8">
-      <animateTransform attributeName="transform" type="rotate" from="0 150 130" to="360 150 130" dur="28s" repeatCount="indefinite"/>
+
+  <!-- Technical orbital emblem -->
+  <g transform="translate(1215 245)">
+    <circle r="174" fill="none" stroke="#5adfff" stroke-opacity=".09" stroke-width="1"/>
+    <circle r="146" fill="none" stroke="url(#spectrum)" stroke-opacity=".35" stroke-width="2" stroke-dasharray="2 12"/>
+    <circle r="118" fill="none" stroke="url(#spectrum)" stroke-opacity=".72" stroke-width="2.5" stroke-dasharray="16 10">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="48s" repeatCount="indefinite"/>
     </circle>
-    <circle cx="150" cy="130" r="55" opacity=".65"/>
-    <path d="M150 38v-24m0 232v-24M58 130H34m232 0h-24M85 65 68 48m164 164-17-17m0-130 17-17M85 195l-17 17" stroke-linecap="round"/>
-    <g transform="translate(103 83)" stroke="#d8f8ff" stroke-width="4" stroke-linejoin="round">
-      <rect x="5" y="12" width="84" height="70" rx="16" fill="#142d4b"/>
-      <path d="M27 12V0m40 12V0M0 36h-15m119 0H89M26 82v18m42-18v18" stroke-linecap="round"/>
-      <circle cx="30" cy="42" r="7" fill="#39e4ff" stroke="none"/>
-      <circle cx="64" cy="42" r="7" fill="#ffbd59" stroke="none"/>
-      <path d="M30 64q17 12 34 0" stroke="#d8f8ff" fill="none"/>
+    <circle r="91" fill="#0b1d35" fill-opacity=".72" stroke="#8deaff" stroke-opacity=".28" stroke-width="2"/>
+    <circle r="76" fill="none" stroke="#83eaff" stroke-opacity=".22" stroke-width="1"/>
+    <g fill="none" stroke="url(#spectrum)" stroke-width="3" stroke-linecap="round">
+      <path d="M0 -174V-151M0 151V174M-174 0H-151M151 0H174"/>
+      <path d="M-123 -123L-107 -107M123 123L107 107M123 -123L107 -107M-123 123L-107 107"/>
     </g>
+    <g transform="translate(-62 -65)">
+      <path d="M28 13L62 0L96 13L112 37V96L96 118H28L12 96V37Z" fill="#102c4b" stroke="#d5f8ff" stroke-width="3"/>
+      <path d="M46 13V-3M78 13V-3" stroke="#d5f8ff" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="46" cy="58" r="10" fill="#45e7ff"><animate attributeName="opacity" values=".55;1;.55" dur="2s" repeatCount="indefinite"/></circle>
+      <circle cx="78" cy="58" r="10" fill="#ffbd68"><animate attributeName="opacity" values="1;.5;1" dur="2s" repeatCount="indefinite"/></circle>
+      <path d="M45 84Q62 100 79 84" fill="none" stroke="#d5f8ff" stroke-width="4" stroke-linecap="round"/>
+      <path d="M12 48H0M112 48H124M42 118V132M82 118V132" stroke="#d5f8ff" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <circle cx="0" cy="-146" r="6" fill="#43e8ff" filter="url(#smallGlow)"/>
+    <circle cx="146" cy="0" r="5" fill="#ffbd68" filter="url(#smallGlow)"/>
   </g>
+
+  <!-- Wordmark -->
   <g font-family="Arial, Helvetica, sans-serif">
-    <text x="112" y="158" fill="#9cefff" font-size="21" font-weight="700" letter-spacing="8">JOÃO PESSOA · PARAÍBA · BRASIL</text>
-    <text x="104" y="250" fill="#ffffff" font-size="92" font-weight="800" letter-spacing="2">RABBITECH</text>
-    <rect x="110" y="278" width="560" height="4" rx="2" fill="url(#neon)">
-      <animate attributeName="width" values="360;560;360" dur="5s" repeatCount="indefinite"/>
+    <text x="112" y="118" fill="#9deeff" font-size="18" font-weight="700" letter-spacing="7">PRAIA DA PENHA · JOÃO PESSOA · PB</text>
+    <text x="104" y="250" fill="#ffffff" font-size="112" font-weight="900" letter-spacing="-3">RABBITECH</text>
+    <text x="112" y="302" fill="#b9cce4" font-size="25" font-weight="600" letter-spacing="4">ROBÓTICA  /  PROGRAMAÇÃO  /  INOVAÇÃO</text>
+    <rect x="112" y="332" width="590" height="4" rx="2" fill="url(#spectrum)"/>
+    <rect x="112" y="332" width="150" height="4" rx="2" fill="#ffffff" opacity=".7">
+      <animate attributeName="x" values="112;552;112" dur="6s" repeatCount="indefinite"/>
     </rect>
-    <text x="112" y="332" fill="#d9e8f7" font-size="27" letter-spacing="3">ROBÓTICA  ·  PROGRAMAÇÃO  ·  INOVAÇÃO</text>
-    <text x="112" y="382" fill="#8ea9c7" font-size="19" letter-spacing="2">IDEIAS QUE GANHAM MOVIMENTO.</text>
+    <text x="112" y="390" fill="#8ea9c7" font-size="21" letter-spacing="3">IDEIAS QUE GANHAM MOVIMENTO.</text>
+    <text x="112" y="438" fill="#6384a8" font-size="14" letter-spacing="4">CONSTRUIR · TESTAR · APRENDER · EVOLUIR</text>
   </g>
-  <path d="M0 440H1600" stroke="url(#neon)" stroke-width="3" opacity=".8"/>
-  <rect x="18" y="18" width="1564" height="424" rx="20" fill="none" stroke="#8bdfff" stroke-opacity=".18"/>
-  <g opacity=".55" fill="#b9f5ff">
-    <circle cx="890" cy="90" r="2"/><circle cx="940" cy="140" r="2"/><circle cx="820" cy="210" r="2"/><circle cx="1010" cy="310" r="2"/><circle cx="760" cy="370" r="2"/>
-  </g>
-  <path d="M0 0H1600V460H0Z" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="2"/>
+
+  <!-- Framing and subtle moving scan line -->
+  <rect x="18" y="18" width="1564" height="464" rx="22" fill="none" stroke="#9bdfff" stroke-opacity=".17"/>
+  <path d="M30 466H1570" stroke="url(#spectrum)" stroke-width="2" opacity=".8"/>
+  <path d="M0 482H1600" stroke="#7beaff" stroke-opacity=".12" stroke-width="1"/>
+  <rect x="0" y="0" width="1600" height="500" rx="30" fill="none" stroke="#ffffff" stroke-opacity=".05" stroke-width="2"/>
 </svg>
