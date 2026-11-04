@@ -4,7 +4,7 @@
 
 ### ROBÓTICA • PROGRAMAÇÃO • ENGENHARIA • INOVAÇÃO
 
-**Desenvolvido por Luiz Narciso, Arthur, Nayon, Eduarda, Fernanda e Nayane.**
+**Desenvolvido por Luiz, Arthur, Nayon, Eduarda, Fernanda e Nayane.**
 
 [Repositório](https://github.com/lnzindev/rabbitech-code-for-pybricks) · [Perfil do desenvolvedor](https://github.com/lnzindev) · [Outros projetos Rabbitech](https://github.com/lnzindev?tab=repositories)
 
@@ -19,7 +19,7 @@
 
 ## 🤖 Sobre o projeto
 
-O **Rabbitech Pybricks Autopilot** é um projeto de programação e controle robótico para o LEGO SPIKE Prime, desenvolvido por **Luiz Narciso, Arthur, Nayon, Eduarda, Fernanda e Nayane**, em João Pessoa, Paraíba.
+O **Rabbitech Pybricks Autopilot** é um projeto de programação e controle robótico para o LEGO SPIKE Prime, desenvolvido por **Luiz, Arthur, Nayon, Eduarda, Fernanda e Nayane**, em João Pessoa, Paraíba.
 
 A proposta é transformar estratégias e ideias em movimentos reais: controlar motores, executar rotinas, realizar giros com auxílio da IMU e registrar dados para aprimorar o comportamento do robô.
 
@@ -109,13 +109,46 @@ Outros objetivos de evolução:
 - Evoluir o sistema de memória adaptativa.
 - Manter o código modular, legível e fácil de manter.
 
-## 🏆 Robótica em João Pessoa
+## 🏆 Trajetória em robótica e competições
 
-A robótica educacional de João Pessoa tem conquistado espaço em competições e projetos de tecnologia. Em fevereiro de 2026, a Prefeitura de João Pessoa publicou os resultados da etapa regional da FIRST LEGO League Challenge 2025/2026, destacando a equipe **Tech Scorpions**, da Escola Municipal Antônio Santos Coelho Neto, com o 1º lugar em Core Values e o 3º lugar em Desempenho do Robô.
+A participação de Luiz e de seus colegas em equipes de robótica educacional de João Pessoa aparece em registros públicos de competições municipais, regionais e nacionais. As informações abaixo foram reunidas a partir de publicações institucionais e reportagens; elas descrevem resultados das equipes e não dados pessoais dos estudantes.
 
-Luiz Narciso dos Santos Oliveira aparece entre os integrantes da equipe na publicação oficial. Essa trajetória representa o espírito que inspira este projeto: colaboração, criatividade, programação e vontade de construir soluções.
+### Tech Scorpions — FIRST LEGO League Challenge 2025/2026
 
-**Fonte:** [Prefeitura de João Pessoa — resultados da FIRST LEGO League Challenge 2025/2026](https://www.joaopessoa.pb.gov.br/noticias/rede-municipal-de-ensino-de-joao-pessoa-e-a-unica-do-brasil-a-conquistar-tres-categorias-da-first-lego-league-challenge-2025-2026/).
+Na etapa regional realizada em São Luís (MA), a equipe **Tech Scorpions**, da Escola Municipal Antônio Santos Coelho Neto, conquistou:
+
+- **1º lugar em Core Values**, reconhecimento ligado à colaboração, ao respeito, à cooperação e à ética.
+- **3º lugar em Desempenho do Robô**, resultado relacionado à eficiência técnica, à programação e à precisão nas missões.
+
+A Prefeitura publicou como integrantes da equipe **Arthur Wesley Oliveira de Lima, Luiz, Nayon Gabryel Trajano Silva, Luccas Samuell Liberato Silva e Cibelly Silva Vasconcelos**. A professora **Maria Olga Pessoa Zacchi** aparece como mediadora. A publicação também registra um depoimento de Nayon sobre a surpresa e a alegria da equipe com o prêmio de Core Values.
+
+### Rabbitech — temporada nacional de 2026
+
+Em 2026, a equipe **Rabbitech**, também vinculada à Escola Municipal Antônio Santos Coelho Neto, conquistou o **1º lugar na FLL Explore no Torneio Pessoense de Robótica**, resultado que garantiu classificação para a etapa nacional no Rio de Janeiro.
+
+Na etapa nacional, realizada em outubro de 2026, a Rabbitech alcançou a **2ª colocação geral na categoria Explore** e recebeu o prêmio **Challenge Solution**, relacionado às soluções apresentadas aos desafios da competição. A participação em uma etapa mundial foi noticiada como dependente da confirmação das vagas disponíveis.
+
+### Rabbitech Future — Future Edition
+
+A escola também participou com a equipe **Rabbitech Future** na categoria **Future Edition**. Reportagens sobre a competição de outubro de 2026 descrevem o grupo como a **primeira equipe do Nordeste a participar dessa modalidade em uma competição nacional realizada no Brasil**.
+
+Uma reportagem sobre a preparação das equipes informou que a participação estava ligada à temporada com o tema **BIOGLOW**, voltado à biodiversidade, e descreveu uma proposta de composto para ajudar plantas a se desenvolverem em locais com pouca disponibilidade de água. A mesma matéria explicou que as equipes da escola foram preparadas para modalidades diferentes: Future Edition e Founders Edition. Por isso, este README não atribui automaticamente todos os projetos ou resultados a todos os integrantes.
+
+### Estudantes e orientação citados nas publicações
+
+Na cobertura da etapa nacional de outubro de 2026, a relação publicada para as equipes **Rabbitech** e **Rabbitech Future**, em conjunto, inclui **Luiz, Arthur Weslley Oliveira de Lima e Nayane Vitória Santos de Macedo**, além de outros estudantes da Escola Municipal Antônio Santos Coelho Neto. A publicação informa **Maria Olga Pessoa Zacchi** como mediadora.
+
+A relação é apresentada de forma conjunta para as duas equipes; a matéria não especifica qual estudante pertence a qual modalidade. Por isso, não seria correto afirmar, sem outra fonte, a composição individual de cada equipe.
+
+### Fontes públicas
+
+- [Prefeitura de João Pessoa — Tech Scorpions: resultados da FIRST LEGO League Challenge 2025/2026](https://www.joaopessoa.pb.gov.br/noticias/rede-municipal-de-ensino-de-joao-pessoa-e-a-unica-do-brasil-a-conquistar-tres-categorias-da-first-lego-league-challenge-2025-2026/)
+- [Jornal A União — cobertura da etapa regional da FLL 2025/2026 (11/02/2026)](https://auniao.pb.gov.br/servicos/copy_of_jornal-a-uniao/2026/fevereiro/jornal-em-pdf-11-02-26-cdepc.pdf)
+- [Giro ES — Torneio Pessoense de Robótica define equipes classificadas](https://www.giroes.com.br/noticia/36197/torneio-pessoense-de-robotica-define-equipes-que-representarao-joao-pessoa-em-competicoes-nacional-e-regional)
+- [Giro ES — premiação dos estudantes no Torneio Pessoense de Robótica](https://www.giroes.com.br/noticia/38255/leo-bezerra-premia-alunos-vencedores-do-torneio-pessoense-de-robotica-que-representarao-joao-pessoa-em-competicoes-nacionais-e-regionais)
+- [Paraíba Hub — preparação para as categorias Future Edition e Founders Edition (01/10/2026)](https://paraibahub.com.br/noticia/parque-arruda-camara-recebe-alunos-da-rede-municipal-que-disputarao-torneios-de-robotica)
+- [Paraíba em Movimento — resultados nacionais e relação de estudantes (outubro de 2026)](https://paraibaemmovimento.com/escolas-municipais-de-joao-pessoa-conquistam-1o-e-2o-lugares-em-competicao-nacional-de-robotica/)
+- [Tribuna PB — Rabbitech, Rabbitech Future e resultados da etapa nacional (18/10/2026)](https://tribunapb.com.br/2026/10/18/alunos-de-escolas-publicas-de-joao-pessoa-conquistam-titulo-nacional-de-robotica-e-garantem-vaga-em-mundial-nos-estados-unidos/)
 
 ---
 
@@ -125,7 +158,7 @@ Luiz Narciso dos Santos Oliveira aparece entre os integrantes da equipe na publi
 
 **Da ideia ao código. Do código ao movimento.**
 
-Desenvolvido por **Luiz Narciso, Arthur, Nayon, Eduarda, Fernanda e Nayane** · João Pessoa, Paraíba, Brasil.
+Desenvolvido por **Luiz, Arthur, Nayon, Eduarda, Fernanda e Nayane** · João Pessoa, Paraíba, Brasil.
 
 [GitHub](https://github.com/lnzindev) · [Ver repositório](https://github.com/lnzindev/rabbitech-code-for-pybricks)
 
