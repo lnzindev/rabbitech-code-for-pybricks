@@ -19,7 +19,7 @@
 
 ## 🤖 Sobre o projeto
 
-O **Rabbitech Pybricks Autopilot** é um projeto de programação e controle robótico para o LEGO SPIKE Prime, desenvolvido por **Luiz Narciso**, em João Pessoa, Paraíba.
+O **Rabbitech Pybricks Autopilot** é um projeto de programação e controle robótico para o LEGO SPIKE Prime, desenvolvido por **Luiz Narciso, Arthur, Nayon, Eduarda, Fernanda e Nayane**, em João Pessoa, Paraíba.
 
 A proposta é transformar estratégias e ideias em movimentos reais: controlar motores, executar rotinas, realizar giros com auxílio da IMU e registrar dados para aprimorar o comportamento do robô.
 
