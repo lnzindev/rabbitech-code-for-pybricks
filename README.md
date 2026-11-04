@@ -25,6 +25,31 @@ A proposta é transformar estratégias e ideias em movimentos reais: controlar m
 
 Este repositório faz parte da trajetória de experimentação em robótica da Rabbitech. Mais do que reunir códigos, ele documenta o desenvolvimento de soluções, testes e melhorias.
 
+## 📸 Nossa trajetória em imagens
+
+Registros oficiais das equipes em competições e atividades de preparação, publicados pela Prefeitura de João Pessoa.
+
+<div align="center">
+
+<img src="https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-09-at-10.07.48-1024x651.jpeg" alt="Equipe Tech Scorpions reunida durante a etapa regional da FIRST LEGO League 2025/2026" width="92%" />
+
+**Tech Scorpions — etapa regional da FLL 2025/2026**
+
+</div>
+
+<div align="center">
+  <img src="https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/10/2o-lugar-EM-Antonio-Santos-Coelho-Challenge-Solution-1024x768.jpeg" alt="Estudantes da Escola Municipal Antônio Santos Coelho Neto com a bandeira Rabbitech na etapa nacional Explore" width="48%" />
+  <img src="https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/10/EM-Antonio-Santos-Coelho-Future-Edition-1024x768.jpeg" alt="Estudantes da Escola Municipal Antônio Santos Coelho Neto representando a Rabbitech Future na Future Edition" width="48%" />
+</div>
+
+<div align="center">
+
+**Rabbitech — Explore** · **Rabbitech Future — Future Edition**
+
+<sub>Fotografias: Prefeitura de João Pessoa / Secretaria de Educação.</sub>
+
+</div>
+
 ## ⚡ Recursos do sistema
 
 - **Controlador sequencial:** organiza até oito rotinas em uma única execução.
@@ -132,13 +157,11 @@ Na etapa nacional, realizada em outubro de 2026, a Rabbitech alcançou a **2ª c
 
 A escola também participou com a equipe **Rabbitech Future** na categoria **Future Edition**. Reportagens sobre a competição de outubro de 2026 descrevem o grupo como a **primeira equipe do Nordeste a participar dessa modalidade em uma competição nacional realizada no Brasil**.
 
-Uma reportagem sobre a preparação das equipes informou que a participação estava ligada à temporada com o tema **BIOGLOW**, voltado à biodiversidade, e descreveu uma proposta de composto para ajudar plantas a se desenvolverem em locais com pouca disponibilidade de água. A mesma matéria explicou que as equipes da escola foram preparadas para modalidades diferentes: Future Edition e Founders Edition. Por isso, este README não atribui automaticamente todos os projetos ou resultados a todos os integrantes.
+A temporada **BIOGLOW** é voltada à biodiversidade. Na preparação para a Future Edition, os estudantes pesquisaram a germinação de sementes e testaram formas de proteção para favorecer o desenvolvimento das plantas em solos mais difíceis e com pouca água. Em paralelo, a equipe preparada para a **Founders Edition** desenvolveu uma proposta diferente: preservar e monitorar rios da cidade por meio de uma estação com sensores para acompanhar o Rio do Cabelo, próximo à escola. São projetos de modalidades distintas.
 
 ### Estudantes e orientação citados nas publicações
 
-Na cobertura da etapa nacional de outubro de 2026, a relação publicada para as equipes **Rabbitech** e **Rabbitech Future**, em conjunto, inclui **Luiz, Arthur Weslley Oliveira de Lima e Nayane Vitória Santos de Macedo**, além de outros estudantes da Escola Municipal Antônio Santos Coelho Neto. A publicação informa **Maria Olga Pessoa Zacchi** como mediadora.
-
-A relação é apresentada de forma conjunta para as duas equipes; a matéria não especifica qual estudante pertence a qual modalidade. Por isso, não seria correto afirmar, sem outra fonte, a composição individual de cada equipe.
+Na cobertura da etapa nacional de outubro de 2026, a Prefeitura publicou a relação conjunta dos estudantes que representaram a Escola Municipal Antônio Santos Coelho Neto nas equipes **Rabbitech** e **Rabbitech Future**: Jamilly Vithoria, Laysa, Heloisa, Yohanna, Lunna, Thauanny, Nayane, Luiz, Arthur e Jamilly Tayonara. A mediadora indicada foi **Maria Olga Pessoa Zacchi**. A publicação não separa os estudantes por modalidade, então a lista é mantida como uma delegação conjunta.
 
 ### Fontes públicas
 
