@@ -29,42 +29,8 @@ A Escola Municipal Antônio Santos Coelho Neto fica na **Praia da Penha**, em Jo
 
 Essa ligação com o território inspira nossos projetos: pesquisar problemas reais do entorno, cuidar da natureza e desenvolver tecnologia que tenha utilidade para a comunidade. A robótica aqui não está separada do lugar onde estudamos: ela nasce também da observação da Penha e de seus desafios.
 
-<div align="center">
-<img src="https://www.mpf.mp.br/o-mpf/unidades/pr-pb/noticias/mpf-pede-demarcacao-do-territorio-tradicional-quilombola-da-praia-da-penha-em-joao-pessoa-pb/%40%40images/image-800-22871c7ec751fe9e893833d355bb3098.jpeg" alt="Vista da comunidade tradicional pesqueira da Praia da Penha, em João Pessoa" width="92%" />
-<sub>Praia da Penha — foto: Aline Silva / Ministério Público Federal.</sub>
-</div>
 
 Este repositório faz parte da trajetória de experimentação em robótica da Rabbitech. Mais do que reunir códigos, ele documenta o desenvolvimento de soluções, testes e melhorias.
-
-## 📸 Nossa trajetória em imagens
-
-Registros oficiais das equipes em competições e atividades de preparação, publicados pela Prefeitura de João Pessoa.
-
-<div align="center">
-
-<img src="https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/02/WhatsApp-Image-2026-02-09-at-10.07.48-1024x651.jpeg" alt="Equipe Tech Scorpions reunida durante a etapa regional da FIRST LEGO League 2025/2026" width="92%" />
-
-**Tech Scorpions — etapa regional da FLL 2025/2026**
-
-</div>
-
-<div align="center">
-  <img src="https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/10/2o-lugar-EM-Antonio-Santos-Coelho-Challenge-Solution-1024x768.jpeg" alt="Estudantes da Escola Municipal Antônio Santos Coelho Neto com a bandeira Rabbitech na etapa nacional Explore" width="48%" />
-  <img src="https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/10/EM-Antonio-Santos-Coelho-Future-Edition-1024x768.jpeg" alt="Estudantes da Escola Municipal Antônio Santos Coelho Neto representando a Rabbitech Future na Future Edition" width="48%" />
-</div>
-
-<div align="center">
-
-**Rabbitech — Explore** · **Rabbitech Future — Future Edition**
-
-<div align="center">
-<img src="https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/09/IMG_20260930_123214_HDR-771x1024.jpg" alt="Estudantes da Escola Municipal Antônio Santos Coelho Neto em visita técnica ao Parque Arruda Câmara durante a preparação dos projetos de robótica" width="62%" />
-<sub>Visita técnica e pesquisa de campo para preparação dos projetos — Prefeitura de João Pessoa, setembro de 2026.</sub>
-</div>
-
-<sub>Fotografias: Prefeitura de João Pessoa / Secretaria de Educação.</sub>
-
-</div>
 
 ## ⚡ Recursos do sistema
 
