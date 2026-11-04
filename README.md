@@ -4,7 +4,7 @@
 
 ### ROBÓTICA • PROGRAMAÇÃO • ENGENHARIA • INOVAÇÃO
 
-**Um projeto de Luiz Narciso, desenvolvido em João Pessoa — Paraíba, Brasil.**
+**Desenvolvido por Luiz Narciso, Arthur, Nayon, Eduarda, Fernanda e Nayane.**
 
 [Repositório](https://github.com/lnzindev/rabbitech-code-for-pybricks) · [Perfil do desenvolvedor](https://github.com/lnzindev) · [Outros projetos Rabbitech](https://github.com/lnzindev?tab=repositories)
 
@@ -125,7 +125,7 @@ Luiz Narciso dos Santos Oliveira aparece entre os integrantes da equipe na publi
 
 **Da ideia ao código. Do código ao movimento.**
 
-Desenvolvido por **Luiz Narciso** · João Pessoa, Paraíba, Brasil.
+Desenvolvido por **Luiz Narciso, Arthur, Nayon, Eduarda, Fernanda e Nayane** · João Pessoa, Paraíba, Brasil.
 
 [GitHub](https://github.com/lnzindev) · [Ver repositório](https://github.com/lnzindev/rabbitech-code-for-pybricks)
 
