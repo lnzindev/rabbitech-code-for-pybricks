@@ -136,7 +136,7 @@ Outros objetivos de evolução:
 
 ## 🏆 Trajetória em robótica e competições
 
-A participação de Luiz e de seus colegas em equipes de robótica educacional de João Pessoa aparece em registros públicos de competições municipais, regionais e nacionais. As informações abaixo foram reunidas a partir de publicações institucionais e reportagens; elas descrevem resultados das equipes e não dados pessoais dos estudantes.
+As equipes da Escola Municipal Antônio Santos Coelho Neto representam João Pessoa em competições de robótica educacional. A trajetória reúne resultados na FIRST LEGO League, projetos de inovação e participação em diferentes modalidades.
 
 ### Tech Scorpions — FIRST LEGO League Challenge 2025/2026
 
