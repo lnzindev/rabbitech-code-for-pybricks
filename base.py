@@ -1,19 +1,17 @@
 
 # ==========================================
-# RABBITECH - AUTOPILOT V4.0
+# RABBITECH - AUTOPILOT V3.2
 # Pybricks MicroPython 3.6.1
 #
+# MOTORES:
 # C = GARRA ESQUERDA
 # D = GARRA DIREITA
 # E = TRACAO ESQUERDA
 # F = TRACAO DIREITA
 #
 # RODAS: 56 MM
-# ACELERACAO E FRENAGEM SUAVES
-# GIROS COM DESACELERACAO
-# CORRECAO DE DIRECAO
 # MEMORIA ADAPTATIVA
-# PROTECAO CONTRA TRAVAMENTO
+# VELOCIDADE E ANGULOS PERSONALIZAVEIS
 # ==========================================
 
 from pybricks.hubs import PrimeHub
@@ -34,7 +32,6 @@ garra_esq = Motor(Port.C)
 garra_dir = Motor(Port.D)
 
 DIAMETRO_RODA = 56
-PI = 3.14159265
 
 # ==========================================
 # CONFIGURACOES PERSONALIZAVEIS
@@ -47,27 +44,14 @@ VELOCIDADE_GARRA = 300
 VELOCIDADE_MINIMA = 10
 VELOCIDADE_MAXIMA = 100
 
-# RAMPA DE MOVIMENTO
-VELOCIDADE_INICIAL = 10
-VELOCIDADE_FINAL = 0
+VELOCIDADE_INICIAL = 45
+VELOCIDADE_FINAL = 30
 
-DISTANCIA_ACELERACAO = 150
-DISTANCIA_DESACELERACAO = 180
-
-# RAMPA DOS GIROS
-GIRO_VELOCIDADE_MINIMA = 7
-GIRO_INICIO_DESACELERACAO = 25
-
-# GARRAS
 ANGULO_GARRA_ABERTA = 90
 ANGULO_GARRA_FECHADA = 90
 
-# PROTECAO
-TEMPO_SEM_MOVIMENTO = 1500
-TEMPO_EXTRA_MOVIMENTO = 8000
-
 # ==========================================
-# CORRECAO DE DIRECAO
+# INTELIGENCIA ADAPTATIVA
 # ==========================================
 
 KP_G = 1.4
@@ -80,63 +64,47 @@ MAX_MEMORIA = 7
 memoria_frente = 0.0
 memoria_re = 0.0
 
+movimentos_concluidos = 0
+movimentos_falhos = 0
+
 # ==========================================
-# CONTROLE DOS GIROS
+# CONFIGURACAO DOS GIROS
 # ==========================================
 
 KP_T = 1.5
+KD_T = 0.3
 
-TOLERANCIA_GIRO = 1.5
+TOLERANCIA_GIRO = 1.0
 TIMEOUT_GIRO = 10000
 
 COMPENSACAO_DIREITA = 3
 
 # ==========================================
-# CONTADORES
-# ==========================================
-
-movimentos_concluidos = 0
-movimentos_falhos = 0
-
-# ==========================================
 # MEMORIA PERMANENTE
 # ==========================================
 
-ASSINATURA = b"RBT4"
+ASSINATURA = b"RBT3"
 TAMANHO_MEMORIA = 12
 
 
 def codificar_16(valor):
-
     valor = int(valor)
     valor = max(0, min(65535, valor))
-
-    return bytes([
-        valor // 256,
-        valor % 256
-    ])
+    return bytes([valor // 256, valor % 256])
 
 
 def decodificar_16(dados, posicao):
-
-    return (
-        dados[posicao] * 256
-        + dados[posicao + 1]
-    )
+    return dados[posicao] * 256 + dados[posicao + 1]
 
 
 def codificar_memoria(valor):
-
     numero = int(valor * 1000)
     numero = max(-7000, min(7000, numero))
-
     return codificar_16(numero + 32768)
 
 
 def decodificar_memoria(dados, posicao):
-
     numero = decodificar_16(dados, posicao) - 32768
-
     return numero / 1000
 
 
@@ -149,14 +117,11 @@ def salvar_aprendizado():
     dados += codificar_16(movimentos_falhos)
 
     try:
-
         hub.system.storage(0, write=dados)
-
         print("APRENDIZADO SALVO")
         return True
 
     except Exception as erro:
-
         print("ERRO AO SALVAR:", erro)
         return False
 
@@ -169,19 +134,16 @@ def carregar_aprendizado():
     global movimentos_falhos
 
     try:
-
         dados = hub.system.storage(
             0,
             read=TAMANHO_MEMORIA
         )
 
         if len(dados) != TAMANHO_MEMORIA:
-
             print("MEMORIA NOVA")
             return False
 
         if dados[0:4] != ASSINATURA:
-
             print("INICIANDO APRENDIZADO")
             return False
 
@@ -195,7 +157,6 @@ def carregar_aprendizado():
         return True
 
     except Exception as erro:
-
         print("ERRO AO LER MEMORIA:", erro)
         return False
 
@@ -204,11 +165,7 @@ def registrar_falha():
 
     global movimentos_falhos
 
-    movimentos_falhos = min(
-        65535,
-        movimentos_falhos + 1
-    )
-
+    movimentos_falhos = min(65535, movimentos_falhos + 1)
     print("MOVIMENTO FALHOU")
     salvar_aprendizado()
 
@@ -217,11 +174,7 @@ def registrar_sucesso():
 
     global movimentos_concluidos
 
-    movimentos_concluidos = min(
-        65535,
-        movimentos_concluidos + 1
-    )
-
+    movimentos_concluidos = min(65535, movimentos_concluidos + 1)
     print("MOVIMENTO CONCLUIDO")
     salvar_aprendizado()
 
@@ -233,7 +186,6 @@ carregar_aprendizado()
 # ==========================================
 
 def limitar(valor, minimo=-100, maximo=100):
-
     return max(minimo, min(maximo, valor))
 
 
@@ -250,37 +202,11 @@ def parar():
     wait(100)
 
 
-def parar_garras():
-
-    garra_esq.hold()
-    garra_dir.hold()
-
-
 def distancia_percorrida():
 
     return (
         abs(mL.angle()) + abs(mR.angle())
     ) / 2
-
-
-def normalizar_erro(erro):
-
-    return (erro + 180) % 360 - 180
-
-
-# ==========================================
-# RAMPA SUAVE
-# ==========================================
-
-def suavizar(progresso):
-
-    progresso = limitar(progresso, 0, 1)
-
-    return (
-        progresso
-        * progresso
-        * (3 - 2 * progresso)
-    )
 
 
 def velocidade_rampa(
@@ -293,44 +219,21 @@ def velocidade_rampa(
     descida
 ):
 
-    if subida <= 0:
-        velocidade_subida = alvo
+    restante = total - atual
+
+    if atual < subida and subida > 0:
+        velocidade = (
+            inicio + (alvo - inicio) * atual / subida
+        )
+
+    elif restante < descida and descida > 0:
+        velocidade = (
+            final + (alvo - final)
+            * max(0, restante) / descida
+        )
 
     else:
-
-        progresso = suavizar(
-            atual / subida
-        )
-
-        velocidade_subida = (
-            inicio
-            + (alvo - inicio) * progresso
-        )
-
-    if descida <= 0:
-        velocidade_descida = alvo
-
-    else:
-
-        restante = max(0, total - atual)
-
-        progresso = suavizar(
-            restante / descida
-        )
-
-        velocidade_descida = (
-            final
-            + (alvo - final) * progresso
-        )
-
-    # Escolhe o perfil mais lento.
-    # Isso permite rampas que se sobrepoem
-    # em trajetos curtos.
-
-    velocidade = min(
-        velocidade_subida,
-        velocidade_descida
-    )
+        velocidade = alvo
 
     return limitar(velocidade, 0, 100)
 
@@ -345,7 +248,6 @@ def garra_esquerda(angulo, velocidade=None):
         velocidade = VELOCIDADE_GARRA
 
     garra_esq.run_angle(velocidade, angulo)
-
     return True
 
 
@@ -355,7 +257,6 @@ def garra_direita(angulo, velocidade=None):
         velocidade = VELOCIDADE_GARRA
 
     garra_dir.run_angle(velocidade, angulo)
-
     return True
 
 
@@ -363,7 +264,6 @@ def abrir_garras():
 
     garra_esquerda(-ANGULO_GARRA_ABERTA)
     garra_direita(ANGULO_GARRA_ABERTA)
-
     return True
 
 
@@ -371,50 +271,46 @@ def fechar_garras():
 
     garra_esquerda(ANGULO_GARRA_FECHADA)
     garra_direita(-ANGULO_GARRA_FECHADA)
+    return True
 
+
+def parar_garras():
+
+    garra_esq.hold()
+    garra_dir.hold()
     return True
 
 
 # ==========================================
-# GIRO CONTINUO DO IMU
-# Permite acompanhar giros acima de 180 graus
+# CALCULO DOS GIROS
 # ==========================================
 
-def atualizar_giro_continuo(anterior, acumulado):
+def calcular_giro(erro, ultimo_erro, velocidade):
 
-    atual = hub.imu.heading()
+    variacao = erro - ultimo_erro
 
-    diferenca = atual - anterior
-    diferenca = normalizar_erro(diferenca)
-
-    acumulado += diferenca
-
-    return atual, acumulado
-
-
-# ==========================================
-# CONTROLE DE VELOCIDADE DOS GIROS
-# ==========================================
-
-def calcular_giro(erro, velocidade):
-
-    intensidade = abs(erro) * KP_T
-
-    correcao = min(
-        velocidade,
-        intensidade
+    correcao = (
+        erro * KP_T + variacao * KD_T
     )
 
-    correcao = max(
-        GIRO_VELOCIDADE_MINIMA,
-        correcao
-    )
-
-    return limitar(
+    correcao = limitar(
         correcao,
-        GIRO_VELOCIDADE_MINIMA,
+        -velocidade,
         velocidade
     )
+
+    minimo = min(9, velocidade) if abs(erro) > 10 else min(4, velocidade)
+
+    if correcao > 0:
+        correcao = max(minimo, correcao)
+
+    elif correcao < 0:
+        correcao = min(-minimo, correcao)
+
+    else:
+        correcao = minimo if erro > 0 else -minimo
+
+    return correcao
 
 
 # ==========================================
@@ -425,57 +321,40 @@ def giro_interno(angulo, velocidade=45):
 
     parar()
     esperar_imu()
-
     hub.imu.reset_heading(0)
 
-    anterior = hub.imu.heading()
-    acumulado = 0
-
+    ultimo_erro = 0
     relogio = StopWatch()
     concluiu = False
 
     while relogio.time() < TIMEOUT_GIRO:
 
-        anterior, acumulado = atualizar_giro_continuo(
-            anterior,
-            acumulado
-        )
+        erro = angulo - hub.imu.heading()
 
-        erro = angulo - acumulado
-
-        if abs(erro) <= TOLERANCIA_GIRO:
-
+        if abs(erro) < TOLERANCIA_GIRO:
             concluiu = True
             break
 
         correcao = calcular_giro(
             erro,
+            ultimo_erro,
             velocidade
         )
 
-        if erro > 0:
+        mL.dc(correcao)
+        mR.dc(-correcao)
 
-            mL.dc(correcao)
-            mR.dc(-correcao)
-
-        else:
-
-            mL.dc(-correcao)
-            mR.dc(correcao)
-
+        ultimo_erro = erro
         wait(5)
 
     parar()
 
     if not concluiu:
-
         print("ERRO NO GIRO")
         registrar_falha()
-
         return False
 
     registrar_sucesso()
-
     return True
 
 
@@ -487,12 +366,9 @@ def giro_uma_roda_interno(angulo, velocidade=45):
 
     parar()
     esperar_imu()
-
     hub.imu.reset_heading(0)
 
-    anterior = hub.imu.heading()
-    acumulado = 0
-
+    ultimo_erro = 0
     relogio = StopWatch()
     concluiu = False
 
@@ -503,42 +379,34 @@ def giro_uma_roda_interno(angulo, velocidade=45):
 
     while relogio.time() < TIMEOUT_GIRO:
 
-        anterior, acumulado = atualizar_giro_continuo(
-            anterior,
-            acumulado
-        )
+        erro = angulo - hub.imu.heading()
 
-        erro = angulo - acumulado
-
-        if abs(erro) <= TOLERANCIA_GIRO:
-
+        if abs(erro) < TOLERANCIA_GIRO:
             concluiu = True
             break
 
         correcao = calcular_giro(
             erro,
+            ultimo_erro,
             velocidade
         )
 
         if angulo > 0:
             mL.dc(correcao)
-
         else:
             mR.dc(-correcao)
 
+        ultimo_erro = erro
         wait(5)
 
     parar()
 
     if not concluiu:
-
         print("ERRO NO GIRO DE UMA RODA")
         registrar_falha()
-
         return False
 
     registrar_sucesso()
-
     return True
 
 
@@ -549,11 +417,11 @@ def giro_uma_roda_interno(angulo, velocidade=45):
 def andar_interno(
     distancia,
     angulo=0,
-    inicio=10,
+    inicio=45,
     velocidade=60,
-    final=0,
+    final=30,
     subida=300,
-    descida=350
+    descida=250
 ):
 
     global memoria_frente
@@ -561,7 +429,6 @@ def andar_interno(
 
     parar()
     esperar_imu()
-
     hub.imu.reset_heading(0)
 
     mL.reset_angle(0)
@@ -574,9 +441,7 @@ def andar_interno(
         return True
 
     memoria = (
-        memoria_frente
-        if sentido > 0
-        else memoria_re
+        memoria_frente if sentido > 0 else memoria_re
     )
 
     ultimo_erro = 0
@@ -584,7 +449,6 @@ def andar_interno(
     correcao_suave = 0
 
     relogio = StopWatch()
-
     ultimo_tempo = relogio.time()
 
     ultimo_angulo_l = mL.angle()
@@ -593,10 +457,7 @@ def andar_interno(
     ultimo_mov_l = 0
     ultimo_mov_r = 0
 
-    tempo_limite = (
-        TEMPO_EXTRA_MOVIMENTO
-        + total * 20
-    )
+    tempo_limite = max(8000, 5000 + total * 15)
 
     while (
         distancia_percorrida() < total
@@ -604,10 +465,7 @@ def andar_interno(
     ):
 
         agora = relogio.time()
-
         atual = distancia_percorrida()
-
-        # RAMPA DE ACELERACAO E FRENAGEM
 
         vel = velocidade_rampa(
             atual,
@@ -621,56 +479,37 @@ def andar_interno(
 
         vel *= sentido
 
-        # MONITORAMENTO DOS MOTORES
-
         angulo_l = mL.angle()
         angulo_r = mR.angle()
 
         if abs(angulo_l - ultimo_angulo_l) >= 1:
-
             ultimo_angulo_l = angulo_l
             ultimo_mov_l = agora
 
         if abs(angulo_r - ultimo_angulo_r) >= 1:
-
             ultimo_angulo_r = angulo_r
             ultimo_mov_r = agora
 
-        if agora - ultimo_mov_l > TEMPO_SEM_MOVIMENTO:
-
+        if agora - ultimo_mov_l > 1500:
             parar()
-
             print("VERIFICAR MOTOR E")
-
             registrar_falha()
-
             return False
 
-        if agora - ultimo_mov_r > TEMPO_SEM_MOVIMENTO:
-
+        if agora - ultimo_mov_r > 1500:
             parar()
-
             print("VERIFICAR MOTOR F")
-
             registrar_falha()
-
             return False
 
-        # CORRECAO DE DIRECAO
-
-        erro = normalizar_erro(
-            angulo - hub.imu.heading()
-        )
+        erro = angulo - hub.imu.heading()
 
         dt = (agora - ultimo_tempo) / 1000
-
         dt = limitar(dt, 0.005, 0.05)
 
         ultimo_tempo = agora
 
-        derivada = (
-            erro - ultimo_erro
-        ) / dt
+        derivada = (erro - ultimo_erro) / dt
 
         derivada_suave = (
             0.75 * derivada_suave
@@ -707,18 +546,8 @@ def andar_interno(
             + 0.35 * correcao
         )
 
-        # COMANDO DOS MOTORES
-
-        velocidade_esq = limitar(
-            vel + correcao_suave
-        )
-
-        velocidade_dir = limitar(
-            vel - correcao_suave
-        )
-
-        mL.dc(velocidade_esq)
-        mR.dc(velocidade_dir)
+        mL.dc(limitar(vel + correcao_suave))
+        mR.dc(limitar(vel - correcao_suave))
 
         ultimo_erro = erro
 
@@ -727,16 +556,12 @@ def andar_interno(
     parar()
 
     if distancia_percorrida() < total:
-
         print("TEMPO LIMITE ATINGIDO")
-
         registrar_falha()
-
         return False
 
     if sentido > 0:
         memoria_frente = memoria
-
     else:
         memoria_re = memoria
 
@@ -744,7 +569,6 @@ def andar_interno(
     print("MEMORIA ATUAL:", memoria)
 
     registrar_sucesso()
-
     return True
 
 
@@ -765,17 +589,7 @@ def andar(distancia_mm, velocidade=None):
 
     graus_motor = (
         distancia_mm * 360
-        / (PI * DIAMETRO_RODA)
-    )
-
-    subida_graus = (
-        DISTANCIA_ACELERACAO * 360
-        / (PI * DIAMETRO_RODA)
-    )
-
-    descida_graus = (
-        DISTANCIA_DESACELERACAO * 360
-        / (PI * DIAMETRO_RODA)
+        / (3.14159265 * DIAMETRO_RODA)
     )
 
     return andar_interno(
@@ -783,8 +597,8 @@ def andar(distancia_mm, velocidade=None):
         inicio=VELOCIDADE_INICIAL,
         velocidade=velocidade,
         final=VELOCIDADE_FINAL,
-        subida=subida_graus,
-        descida=descida_graus
+        subida=300,
+        descida=250
     )
 
 
@@ -826,42 +640,7 @@ def girar_roda(angulo, velocidade=None):
 
 
 def esperar(tempo):
-
     wait(tempo)
-
-    return True
-
-
-# ==========================================
-# CALIBRACAO
-# ==========================================
-
-def ajustar_roda(diametro):
-
-    global DIAMETRO_RODA
-
-    if diametro <= 0:
-        print("DIAMETRO INVALIDO")
-        return False
-
-    DIAMETRO_RODA = diametro
-
-    print("DIAMETRO AJUSTADO:", DIAMETRO_RODA)
-
-    return True
-
-
-def ajustar_rampa(aceleracao, desaceleracao):
-
-    global DISTANCIA_ACELERACAO
-    global DISTANCIA_DESACELERACAO
-
-    DISTANCIA_ACELERACAO = max(0, aceleracao)
-
-    DISTANCIA_DESACELERACAO = max(0, desaceleracao)
-
-    print("RAMPA ATUALIZADA")
-
     return True
 
 
@@ -872,7 +651,7 @@ def ajustar_rampa(aceleracao, desaceleracao):
 def mostrar_aprendizado():
 
     print("======================")
-    print("RABBITECH AUTOPILOT V4.0")
+    print("RABBITECH AUTOPILOT V3.2")
     print("======================")
 
     print("MEMORIA FRENTE:", memoria_frente)
@@ -880,10 +659,5 @@ def mostrar_aprendizado():
 
     print("MOVIMENTOS OK:", movimentos_concluidos)
     print("MOVIMENTOS COM ERRO:", movimentos_falhos)
-
-    print("DIAMETRO RODA:", DIAMETRO_RODA)
-
-    print("ACELERACAO:", DISTANCIA_ACELERACAO)
-    print("DESACELERACAO:", DISTANCIA_DESACELERACAO)
 
     print("======================")
