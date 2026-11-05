@@ -2,14 +2,14 @@ from base import *
 
 def executar():
 
-    print("SAIDA 1")
+    print("TESTANDO AS DUAS GARRAS")
 
-    andar(200, 60)    # Frente
+    garra_esquerda(180, 200)
+    garra_direita(-180, 200)
+
     esperar(500)
 
-    andar(-200, 60)   # Ré
-    esperar(500)
-
-    girar(90, 45)     # Giro de 90 graus
+    garra_esquerda(-180, 200)
+    garra_direita(180, 200)
 
     return True
