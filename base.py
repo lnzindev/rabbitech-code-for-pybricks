@@ -276,6 +276,10 @@ def giro_interno(angulo, velocidade=45):
     ultimo_heading = hub.imu.heading()
     estavel = 0
     concluiu = False
+    sinal_giro = SINAL_GIRO
+    heading_inicio = hub.imu.heading()
+    tempo_inicio = relogio.time()
+    sentido_confirmado = False
 
     while relogio.time() < TIMEOUT_GIRO:
 
@@ -291,6 +295,15 @@ def giro_interno(angulo, velocidade=45):
         taxa_giro = (heading - ultimo_heading) / dt
         ultimo_tempo = agora
         ultimo_heading = heading
+
+        # Detecta automaticamente se a polaridade dos motores faz o robo
+        # girar no sentido oposto ao heading solicitado.
+        if not sentido_confirmado and agora - tempo_inicio >= 250:
+            deslocamento_heading = heading - heading_inicio
+            if deslocamento_heading * angulo < -0.5:
+                sinal_giro = -sinal_giro
+                print("SENTIDO DOS MOTORES INVERTIDO AUTOMATICAMENTE")
+            sentido_confirmado = True
 
         # Exige erro pequeno e velocidade angular baixa por varias leituras.
         if abs(erro) <= TOLERANCIA_GIRO and abs(taxa_giro) <= 5:
@@ -310,7 +323,7 @@ def giro_interno(angulo, velocidade=45):
             if potencia * erro > 0:
                 potencia = POTENCIA_MIN_GIRO if erro > 0 else -POTENCIA_MIN_GIRO
 
-        potencia *= SINAL_GIRO
+        potencia *= sinal_giro
 
         # Com heading positivo = horario, roda esquerda avanca e direita recua.
         mL.dc(int(potencia))
