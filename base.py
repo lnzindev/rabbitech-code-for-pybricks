@@ -80,11 +80,12 @@ TIMEOUT_GIRO = 8000
 
 # Controle do giro pela IMU.
 # O heading positivo do Pybricks corresponde a giro horario.
-KP_GIRO = 0.75
+KP_GIRO = 0.65
 KD_GIRO = 0.12
-POTENCIA_MIN_GIRO = 5
-POTENCIA_MAX_GIRO = 40
-SINAL_GIRO = 1  # Inverter para -1 somente se o teste mostrar sentido contrario.
+POTENCIA_MIN_GIRO = 7
+POTENCIA_MAX_GIRO = 30
+POTENCIA_TESTE_GIRO = 18
+TEMPO_TESTE_GIRO = 250
 
 # ==========================================
 # MEMORIA PERMANENTE
@@ -267,22 +268,50 @@ def giro_interno(angulo, velocidade=45):
 
     parar()
     esperar_imu()
+    wait(200)
+
+    # CALIBRACAO CURTA DO SENTIDO REAL DAS RODAS.
+    hub.imu.reset_heading(0)
+    mL.dc(POTENCIA_TESTE_GIRO)
+    mR.dc(-POTENCIA_TESTE_GIRO)
+    wait(TEMPO_TESTE_GIRO)
+    parar()
     wait(150)
+
+    deslocamento_teste = hub.imu.heading()
+
+    if abs(deslocamento_teste) < 0.5:
+        hub.imu.reset_heading(0)
+        mL.dc(POTENCIA_TESTE_GIRO + 5)
+        mR.dc(-(POTENCIA_TESTE_GIRO + 5))
+        wait(TEMPO_TESTE_GIRO)
+        parar()
+        wait(150)
+        deslocamento_teste = hub.imu.heading()
+
+    if abs(deslocamento_teste) < 0.5:
+        print("GIRO ABORTADO: IMU NAO DETECTOU MOVIMENTO")
+        print("VERIFIQUE PORTAS E/F, RODAS E ATRITO")
+        registrar_falha()
+        return False
+
+    # Heading positivo no Pybricks significa giro horario.
+    sinal_motor = 1
+    if deslocamento_teste * angulo < 0:
+        sinal_motor = -1
+
+    parar()
+    wait(100)
     hub.imu.reset_heading(0)
 
-    potencia_max = limitar(abs(velocidade), 10, POTENCIA_MAX_GIRO)
+    potencia_max = limitar(abs(velocidade), 12, POTENCIA_MAX_GIRO)
     relogio = StopWatch()
     ultimo_tempo = relogio.time()
     ultimo_heading = hub.imu.heading()
     estavel = 0
     concluiu = False
-    sinal_giro = SINAL_GIRO
-    heading_inicio = hub.imu.heading()
-    tempo_inicio = relogio.time()
-    sentido_confirmado = False
 
     while relogio.time() < TIMEOUT_GIRO:
-
         wait(10)
         agora = relogio.time()
         heading = hub.imu.heading()
@@ -296,50 +325,38 @@ def giro_interno(angulo, velocidade=45):
         ultimo_tempo = agora
         ultimo_heading = heading
 
-        # Detecta automaticamente se a polaridade dos motores faz o robo
-        # girar no sentido oposto ao heading solicitado.
-        if not sentido_confirmado and agora - tempo_inicio >= 250:
-            deslocamento_heading = heading - heading_inicio
-            if deslocamento_heading * angulo < -0.5:
-                sinal_giro = -sinal_giro
-                print("SENTIDO DOS MOTORES INVERTIDO AUTOMATICAMENTE")
-            sentido_confirmado = True
-
-        # Exige erro pequeno e velocidade angular baixa por varias leituras.
-        if abs(erro) <= TOLERANCIA_GIRO and abs(taxa_giro) <= 5:
+        if abs(erro) <= TOLERANCIA_GIRO and abs(taxa_giro) <= 4:
             estavel += 1
-            if estavel >= 4:
+            if estavel >= 5:
                 concluiu = True
                 break
         else:
             estavel = 0
 
-        # Controle PD com amortecimento pela velocidade angular.
         potencia = KP_GIRO * erro - KD_GIRO * taxa_giro
         potencia = limitar(potencia, -potencia_max, potencia_max)
 
-        # Evita que o motor fique sem força longe do alvo, sem impedir a frenagem.
         if abs(erro) > 2 and abs(potencia) < POTENCIA_MIN_GIRO:
             if potencia * erro > 0:
                 potencia = POTENCIA_MIN_GIRO if erro > 0 else -POTENCIA_MIN_GIRO
 
-        potencia *= sinal_giro
-
-        # Com heading positivo = horario, roda esquerda avanca e direita recua.
+        potencia *= sinal_motor
         mL.dc(int(potencia))
         mR.dc(int(-potencia))
 
     parar()
-    wait(100)
+    wait(150)
 
     angulo_real = hub.imu.heading()
     erro_final = angulo - angulo_real
+
     print("GIRO ALVO:", angulo)
     print("GIRO REAL:", angulo_real)
     print("ERRO FINAL:", erro_final)
+    print("SENTIDO CALIBRADO:", sinal_motor)
 
     if not concluiu:
-        print("ERRO NO GIRO: TEMPO LIMITE OU INSTABILIDADE")
+        print("GIRO NAO ATINGIU A TOLERANCIA")
         registrar_falha()
         return False
 
@@ -347,7 +364,6 @@ def giro_interno(angulo, velocidade=45):
     return True
 
 
-# ==========================================
 # GIRO COM UMA RODA
 # ==========================================
 
