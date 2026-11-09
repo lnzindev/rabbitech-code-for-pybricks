@@ -106,7 +106,7 @@ Faça alterações gradualmente e valide cada mudança no robô físico.
 
 ## 🔐 Autoria e integridade
 
-O projeto inclui `LICENSE`, `ANTI_PLAGIO.md`, `security.py` e `tools/update_integrity.py`. A verificação SHA-256 serve para detectar alterações no processo de publicação quando o manifesto é mantido confiável. Ela não é DRM e não impede que alguém com acesso ao código remova a própria verificação. O Pybricks não oferece uma API portátil para ler os arquivos-fonte instalados no Hub e validar seus hashes em tempo de execução. Consulte [ANTI_PLAGIO.md](ANTI_PLAGIO.md) para instruções e limites técnicos.
+O projeto inclui `LICENSE`, `ANTI_PLAGIO.md`, `integrity_manifest.json` e ferramentas locais em `tools/`. O verificador compara os arquivos com o manifesto aprovado antes da publicação; a automação do GitHub repete essa conferência em pushes e pull requests. Isso detecta alterações não acompanhadas no repositório oficial, mas não é DRM nem impede alguém de editar uma cópia. O Pybricks não oferece uma API portátil para o programa no Hub reler os arquivos-fonte e validar seus hashes em tempo de execução. Consulte [ANTI_PLAGIO.md](ANTI_PLAGIO.md) para instruções e limites técnicos.
 
 ## 🚧 Estado atual e próximos passos
 
