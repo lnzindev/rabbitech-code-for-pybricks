@@ -2,6 +2,8 @@
 # RABBITECH - CONTROLADOR SEQUENCIAL
 # Pybricks MicroPython 3.6.1
 # Execute SOMENTE este arquivo.
+# Os hashes são verificados no processo de publicação; o Hub não oferece
+# leitura portátil dos arquivos-fonte instalados para validação runtime.
 # ==========================================
 
 from pybricks.parameters import Button

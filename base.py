@@ -18,6 +18,7 @@ from pybricks.hubs import PrimeHub
 from pybricks.parameters import Direction, Port
 from pybricks.pupdevices import Motor
 from pybricks.tools import wait, StopWatch
+import memoria as memoria_store
 
 # ==========================================
 # INICIALIZACAO
@@ -83,103 +84,38 @@ COMPENSACAO_DIREITA = 3
 # MEMORIA PERMANENTE
 # ==========================================
 
-ASSINATURA = b"RBT3"
-TAMANHO_MEMORIA = 12
-
-
-def codificar_16(valor):
-    valor = int(valor)
-    valor = max(0, min(65535, valor))
-    return bytes([valor // 256, valor % 256])
-
-
-def decodificar_16(dados, posicao):
-    return dados[posicao] * 256 + dados[posicao + 1]
-
-
-def codificar_memoria(valor):
-    numero = int(valor * 1000)
-    numero = max(-7000, min(7000, numero))
-    return codificar_16(numero + 32768)
-
-
-def decodificar_memoria(dados, posicao):
-    numero = decodificar_16(dados, posicao) - 32768
-    return numero / 1000
-
-
 def salvar_aprendizado():
-
-    dados = ASSINATURA
-    dados += codificar_memoria(memoria_frente)
-    dados += codificar_memoria(memoria_re)
-    dados += codificar_16(movimentos_concluidos)
-    dados += codificar_16(movimentos_falhos)
-
-    try:
-        hub.system.storage(0, write=dados)
-        print("APRENDIZADO SALVO")
-        return True
-
-    except Exception as erro:
-        print("ERRO AO SALVAR:", erro)
-        return False
+    return memoria_store.salvar(
+        hub, memoria_frente, memoria_re,
+        movimentos_concluidos, movimentos_falhos
+    )
 
 
 def carregar_aprendizado():
+    global memoria_frente, memoria_re
+    global movimentos_concluidos, movimentos_falhos
 
-    global memoria_frente
-    global memoria_re
-    global movimentos_concluidos
-    global movimentos_falhos
-
-    try:
-        dados = hub.system.storage(
-            0,
-            read=TAMANHO_MEMORIA
-        )
-
-        if len(dados) != TAMANHO_MEMORIA:
-            print("MEMORIA NOVA")
-            return False
-
-        if dados[0:4] != ASSINATURA:
-            print("INICIANDO APRENDIZADO")
-            return False
-
-        memoria_frente = decodificar_memoria(dados, 4)
-        memoria_re = decodificar_memoria(dados, 6)
-
-        movimentos_concluidos = decodificar_16(dados, 8)
-        movimentos_falhos = decodificar_16(dados, 10)
-
-        print("MEMORIA RECUPERADA")
-        return True
-
-    except Exception as erro:
-        print("ERRO AO LER MEMORIA:", erro)
-        return False
+    (memoria_frente, memoria_re,
+     movimentos_concluidos, movimentos_falhos) = memoria_store.carregar(hub)
+    return True
 
 
 def registrar_falha():
-
     global movimentos_falhos
-
     movimentos_falhos = min(65535, movimentos_falhos + 1)
     print("MOVIMENTO FALHOU")
     salvar_aprendizado()
 
 
 def registrar_sucesso():
-
     global movimentos_concluidos
-
     movimentos_concluidos = min(65535, movimentos_concluidos + 1)
     print("MOVIMENTO CONCLUIDO")
     salvar_aprendizado()
 
 
 carregar_aprendizado()
+
 
 # ==========================================
 # FUNCOES BASICAS

@@ -49,7 +49,7 @@ Este repositório faz parte da trajetória de experimentação em robótica da R
 |---|---|
 | `main.py` | Controlador principal. Coordena as oito rotinas. |
 | `base.py` | Configuração do hardware, movimentos, giros, garras e memória adaptativa. |
-| `memoria.py` | Script de teste para salvar e recuperar os dados de aprendizado. |
+| `memoria.py` | Camada isolada de memória persistente, sem importar `base.py`. |
 | `saida_1.py` a `saida_8.py` | Rotinas individuais executadas pelo controlador. |
 
 ## 🔌 Configuração do robô
@@ -103,6 +103,10 @@ As configurações principais estão centralizadas em `base.py`:
 - Limites da memória adaptativa.
 
 Faça alterações gradualmente e valide cada mudança no robô físico.
+
+## 🔐 Autoria e integridade
+
+O projeto inclui `LICENSE`, `ANTI_PLAGIO.md`, `security.py` e `tools/update_integrity.py`. A verificação SHA-256 serve para detectar alterações no processo de publicação quando o manifesto é mantido confiável. Ela não é DRM e não impede que alguém com acesso ao código remova a própria verificação. O Pybricks não oferece uma API portátil para ler os arquivos-fonte instalados no Hub e validar seus hashes em tempo de execução. Consulte [ANTI_PLAGIO.md](ANTI_PLAGIO.md) para instruções e limites técnicos.
 
 ## 🚧 Estado atual e próximos passos
 
