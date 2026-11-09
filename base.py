@@ -75,10 +75,16 @@ movimentos_falhos = 0
 KP_T = 1.5
 KD_T = 0.3
 
-TOLERANCIA_GIRO = 1.0
-TIMEOUT_GIRO = 10000
+TOLERANCIA_GIRO = 1.5
+TIMEOUT_GIRO = 8000
 
-COMPENSACAO_DIREITA = 3
+# Controle do giro pela IMU.
+# O heading positivo do Pybricks corresponde a giro horario.
+KP_GIRO = 0.75
+KD_GIRO = 0.12
+POTENCIA_MIN_GIRO = 5
+POTENCIA_MAX_GIRO = 40
+SINAL_GIRO = 1  # Inverter para -1 somente se o teste mostrar sentido contrario.
 
 # ==========================================
 # MEMORIA PERMANENTE
@@ -255,38 +261,72 @@ def calcular_giro(erro, ultimo_erro, velocidade):
 
 def giro_interno(angulo, velocidade=45):
 
+    if abs(angulo) < 0.1:
+        parar()
+        return True
+
     parar()
     esperar_imu()
+    wait(150)
     hub.imu.reset_heading(0)
 
-    ultimo_erro = 0
+    potencia_max = limitar(abs(velocidade), 10, POTENCIA_MAX_GIRO)
     relogio = StopWatch()
+    ultimo_tempo = relogio.time()
+    ultimo_heading = hub.imu.heading()
+    estavel = 0
     concluiu = False
 
     while relogio.time() < TIMEOUT_GIRO:
 
-        erro = angulo - hub.imu.heading()
+        wait(10)
+        agora = relogio.time()
+        heading = hub.imu.heading()
+        erro = angulo - heading
 
-        if abs(erro) < TOLERANCIA_GIRO:
-            concluiu = True
-            break
+        dt = (agora - ultimo_tempo) / 1000
+        if dt <= 0:
+            dt = 0.01
 
-        correcao = calcular_giro(
-            erro,
-            ultimo_erro,
-            velocidade
-        )
+        taxa_giro = (heading - ultimo_heading) / dt
+        ultimo_tempo = agora
+        ultimo_heading = heading
 
-        mL.dc(correcao)
-        mR.dc(-correcao)
+        # Exige erro pequeno e velocidade angular baixa por varias leituras.
+        if abs(erro) <= TOLERANCIA_GIRO and abs(taxa_giro) <= 5:
+            estavel += 1
+            if estavel >= 4:
+                concluiu = True
+                break
+        else:
+            estavel = 0
 
-        ultimo_erro = erro
-        wait(5)
+        # Controle PD com amortecimento pela velocidade angular.
+        potencia = KP_GIRO * erro - KD_GIRO * taxa_giro
+        potencia = limitar(potencia, -potencia_max, potencia_max)
+
+        # Evita que o motor fique sem força longe do alvo, sem impedir a frenagem.
+        if abs(erro) > 2 and abs(potencia) < POTENCIA_MIN_GIRO:
+            if potencia * erro > 0:
+                potencia = POTENCIA_MIN_GIRO if erro > 0 else -POTENCIA_MIN_GIRO
+
+        potencia *= SINAL_GIRO
+
+        # Com heading positivo = horario, roda esquerda avanca e direita recua.
+        mL.dc(int(potencia))
+        mR.dc(int(-potencia))
 
     parar()
+    wait(100)
+
+    angulo_real = hub.imu.heading()
+    erro_final = angulo - angulo_real
+    print("GIRO ALVO:", angulo)
+    print("GIRO REAL:", angulo_real)
+    print("ERRO FINAL:", erro_final)
 
     if not concluiu:
-        print("ERRO NO GIRO")
+        print("ERRO NO GIRO: TEMPO LIMITE OU INSTABILIDADE")
         registrar_falha()
         return False
 
@@ -548,9 +588,6 @@ def girar(angulo, velocidade=None):
         VELOCIDADE_MINIMA,
         VELOCIDADE_MAXIMA
     )
-
-    if angulo < 0:
-        angulo -= COMPENSACAO_DIREITA
 
     return giro_interno(
         angulo,

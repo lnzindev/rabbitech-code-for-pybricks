@@ -4,7 +4,7 @@
   "algorithm": "git-blob-sha1",
   "files": {
     "main.py": "3e803b090f94c9e13fa1bfc473a47c4231f5c07d",
-    "base.py": "21b25ab5966adbe7d51f5ff32afa109114e64e7a",
+    "base.py": "d6abe31dcb3f37d1b8671411acf313e4a983468c",
     "memoria.py": "661666d0bf082828e4bf01b2b10c8eec1af00b94",
     "saida_1.py": "1794dfa50f928f958436c7478ce138bf566dcb72",
     "saida_2.py": "1794dfa50f928f958436c7478ce138bf566dcb72",

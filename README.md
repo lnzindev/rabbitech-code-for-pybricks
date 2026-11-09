@@ -99,6 +99,8 @@ As configurações principais estão centralizadas em `base.py`:
 - Velocidade e ângulos das garras.
 - Diâmetro das rodas.
 - Parâmetros de correção de direção.
+- Controle PD do giro pela IMU (`KP_GIRO`, `KD_GIRO`).
+- Potência máxima e sentido do giro (`POTENCIA_MAX_GIRO`, `SINAL_GIRO`).
 - Tolerância e tempo limite dos giros.
 - Limites da memória adaptativa.
 
@@ -106,7 +108,7 @@ Faça alterações gradualmente e valide cada mudança no robô físico.
 
 ## 🔐 Autoria e integridade
 
-O projeto inclui `LICENSE`, `ANTI_PLAGIO.md`, `integrity_manifest.json` e ferramentas locais em `tools/`. O verificador compara os arquivos com o manifesto aprovado antes da publicação; a automação do GitHub repete essa conferência em pushes e pull requests. Isso detecta alterações não acompanhadas no repositório oficial, mas não é DRM nem impede alguém de editar uma cópia. O Pybricks não oferece uma API portátil para o programa no Hub reler os arquivos-fonte e validar seus hashes em tempo de execução. Consulte [ANTI_PLAGIO.md](ANTI_PLAGIO.md) para instruções e limites técnicos.
+O projeto inclui `LICENSE`, `ANTI_PLAGIO.md`, `integrity_manifest.json` e um único verificador em `tools/integrity.py`. O verificador compara os arquivos com o manifesto aprovado; a automação do GitHub repete a conferência em pushes e pull requests. Isso detecta alterações não acompanhadas no repositório oficial, mas não é DRM nem impede alguém de editar uma cópia. Consulte [ANTI_PLAGIO.md](ANTI_PLAGIO.md) para instruções e limites técnicos.
 
 ## 🚧 Estado atual e próximos passos
 
