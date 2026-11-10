@@ -1,124 +1,158 @@
 # ==========================================
-# RABBITECH - CONTROLADOR SEQUENCIAL
+# RABBITECH - CONTROLADOR DE COMPETICAO
 # Pybricks MicroPython 3.6.1
-# Execute SOMENTE este arquivo.
-# Os hashes são verificados no processo de publicação; o Hub não oferece
-# leitura portátil dos arquivos-fonte instalados para validação runtime.
+#
+# Uma rodada possui 150 segundos totais.
+# Falha de uma saida nao encerra as outras.
+# CENTER e monitorado pelo proprio programa.
 # ==========================================
 
 from pybricks.parameters import Button
 from pybricks.tools import wait
 
-from base import hub, parar, esperar_imu
+from base import (
+    hub,
+    parar,
+    esperar_imu,
+    iniciar_competicao,
+    verificar_competicao,
+    tempo_restante,
+    finalizar_competicao,
+    solicitar_parada,
+)
 
-from saida_1 import executar as programa1
-from saida_2 import executar as programa2
-from saida_3 import executar as programa3
-from saida_4 import executar as programa4
-from saida_5 import executar as programa5
-from saida_6 import executar as programa6
-from saida_7 import executar as programa7
-from saida_8 import executar as programa8
+from saida_1 import executar as programa1, CONFIGURADA as ativa1
+from saida_2 import executar as programa2, CONFIGURADA as ativa2
+from saida_3 import executar as programa3, CONFIGURADA as ativa3
+from saida_4 import executar as programa4, CONFIGURADA as ativa4
+from saida_5 import executar as programa5, CONFIGURADA as ativa5
+from saida_6 import executar as programa6, CONFIGURADA as ativa6
+from saida_7 import executar as programa7, CONFIGURADA as ativa7
+from saida_8 import executar as programa8, CONFIGURADA as ativa8
 
-
-# ==========================================
-# LISTA DAS OITO SAIDAS
-# ==========================================
 
 SAIDAS = [
-   
-    ("SAIDA 1", programa1),
-    ("SAIDA 2", programa2),
-    ("SAIDA 3", programa3),
-    ("SAIDA 4", programa4),
-    ("SAIDA 5", programa5),
-    ("SAIDA 6", programa6),
-    ("SAIDA 7", programa7),
-    ("SAIDA 8", programa8),
+    ("SAIDA 1", programa1, ativa1),
+    ("SAIDA 2", programa2, ativa2),
+    ("SAIDA 3", programa3, ativa3),
+    ("SAIDA 4", programa4, ativa4),
+    ("SAIDA 5", programa5, ativa5),
+    ("SAIDA 6", programa6, ativa6),
+    ("SAIDA 7", programa7, ativa7),
+    ("SAIDA 8", programa8, ativa8),
 ]
 
 
-
-# ==========================================
-# ESPERAR BOTAO ESQUERDO
-# ==========================================
-
-def esperar_botao_esquerdo():
-
-    # Esperar o botao ser solto
-    while Button.LEFT in hub.buttons.pressed():
-        wait(10)
-
-    # Esperar um novo aperto
+def esperar_inicio():
+    # O primeiro toque em LEFT inicia o cronometro oficial.
     while Button.LEFT not in hub.buttons.pressed():
+        if Button.CENTER in hub.buttons.pressed():
+            solicitar_parada()
+            return False
         wait(10)
 
-    # Esperar soltar novamente
     while Button.LEFT in hub.buttons.pressed():
+        if Button.CENTER in hub.buttons.pressed():
+            solicitar_parada()
+            return False
         wait(10)
+
+    return True
+
+
+def esperar_proxima_saida():
+    # LEFT dispara a proxima saida cadastrada.
+    # O tempo da rodada continua contando enquanto aguarda.
+    while Button.LEFT in hub.buttons.pressed():
+        if not verificar_competicao():
+            return False
+        wait(10)
+
+    while Button.LEFT not in hub.buttons.pressed():
+        if not verificar_competicao():
+            return False
+        wait(10)
+
+    while Button.LEFT in hub.buttons.pressed():
+        if not verificar_competicao():
+            return False
+        wait(10)
+
+    return verificar_competicao()
 
 
 # ==========================================
-# INICIAR CONTROLADOR
+# PREPARACAO
 # ==========================================
 
 esperar_imu()
 parar()
-
-numero = 1
-falhou = False
+hub.display.text("READY")
 
 # ==========================================
-# EXECUTAR SAIDAS EM SEQUENCIA
+# EXECUCAO DA RODADA
 # ==========================================
 
-for item in SAIDAS:
+if esperar_inicio():
+    iniciar_competicao()
+    primeira_saida = True
 
-    nome = item[0]
-    programa = item[1]
+    for item in SAIDAS:
+        nome = item[0]
+        programa = item[1]
+        configurada = item[2]
 
-    # Mostrar numero da saida
-    hub.display.number(numero)
+        if not verificar_competicao():
+            break
 
-    print("AGUARDANDO SAIDA", numero, nome)
+        if not configurada:
+            print(nome, "NAO CONFIGURADA - IGNORADA")
+            continue
 
-    # Esperar aperto do botao esquerdo
-    esperar_botao_esquerdo()
+        if not primeira_saida:
+            print("AGUARDANDO PARTIDA:", nome)
+            if not esperar_proxima_saida():
+                break
 
-    parar()
+        primeira_saida = False
 
-    print("EXECUTANDO:", nome)
+        if not verificar_competicao():
+            break
 
-    # Executar programacao individual
-    resultado = programa()
+        hub.display.text(str(nome[-1]))
+        print("EXECUTANDO:", nome)
 
-    parar()
+        resultado = programa()
+        parar()
 
-    # Verificar se ocorreu uma falha
-    if resultado is False:
+        # Uma falha local nao encerra a rodada.
+        # O proximo roteiro continua disponivel enquanto houver tempo.
+        if not verificar_competicao():
+            break
 
-        hub.display.text("ERRO")
+        if resultado is False:
+            print(nome, "TEVE FALHA LOCAL. RODADA CONTINUA.")
+        else:
+            print(nome, "CONCLUIDA.")
 
-        print("SAIDA INTERROMPIDA:", nome)
-
-        falhou = True
-        break
-
-    print("SAIDA CONCLUIDA:", nome)
-
-    numero += 1
+    # Nao repetir automaticamente rotas ja executadas.
+    # Depois das saidas cadastradas, manter a rodada ativa ate 150 s
+    # ou ate o operador pressionar CENTER.
+    if verificar_competicao():
+        print("ROTAS CADASTRADAS FINALIZADAS. AGUARDANDO FIM DA RODADA.")
+        while verificar_competicao():
+            wait(10)
 
 
 # ==========================================
-# FINALIZAR CONTROLADOR
+# ENCERRAMENTO CONTROLADO
 # ==========================================
 
-parar()
+restante = tempo_restante()
 
-if falhou:
-    hub.display.text("ERRO")
-    print("CONTROLADOR INTERROMPIDO")
-
-else:
+if restante <= 0:
     hub.display.text("FIM")
-    print("TODAS AS SAIDAS FINALIZADAS")
+else:
+    hub.display.text("STOP")
+
+finalizar_competicao()
