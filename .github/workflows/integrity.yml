@@ -39,7 +39,7 @@ jobs:
           payload = Path("release_payload.zip.b64")
           if not payload.is_file():
               with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-                  output.write("applied=false\\n")
+                  output.write("applied=false\n")
               print("No staged bundle. Running normal integrity checks.")
           else:
               try:
@@ -57,7 +57,7 @@ jobs:
 
               payload.unlink()
               with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-                  output.write("applied=true\\n")
+                  output.write("applied=true\n")
               print("Staged release bundle extracted.")
           PY
 
