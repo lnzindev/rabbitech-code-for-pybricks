@@ -1,5 +1,7 @@
 from base import *
 
+CONFIGURADA = False  # Marque True quando cadastrar uma rota real.
+
 def executar():
 
     print("TESTANDO AS DUAS GARRAS")
