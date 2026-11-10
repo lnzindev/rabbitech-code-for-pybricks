@@ -1,23 +1,23 @@
-from base import andar, esperar, girar
+from base import *
+
+CONFIGURADA = False  # Marque True quando cadastrar uma rota real.
 
 def executar():
 
-    print("SAIDA 1")
+    print("TESTANDO AS DUAS GARRAS")
 
-    if not andar(200, 60):
-        print("SAIDA 1 INTERROMPIDA: FALHA AO AVANCAR")
-        return False
+    andar(780, 600)
 
-    esperar(500)
+    esperar(100)
 
-    if not andar(-200, 60):
-        print("SAIDA 1 INTERROMPIDA: FALHA AO RECUAR")
-        return False
+    girar(-48, 80)
+
+    andar(100, 100)
 
     esperar(500)
-
-    if not girar(90, 45):
-        print("SAIDA 1 INTERROMPIDA: FALHA NO GIRO")
-        return False
+    garra_direita(256, 200)
+    garra_esquerda(200, 200)
+    andar(-150, 200)
+    giraR(90, 80)
 
     return True
