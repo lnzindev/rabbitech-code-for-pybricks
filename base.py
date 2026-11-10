@@ -80,12 +80,12 @@ TIMEOUT_GIRO = 8000
 
 # Controle do giro pela IMU.
 # O heading positivo do Pybricks corresponde a giro horario.
-KP_GIRO = 0.65
-KD_GIRO = 0.12
-POTENCIA_MIN_GIRO = 7
-POTENCIA_MAX_GIRO = 30
-POTENCIA_TESTE_GIRO = 18
-TEMPO_TESTE_GIRO = 250
+# O giro usa somente a IMU durante a manobra.
+# Nao existe pulso de calibracao antes do giro: ele deslocava o robo
+# aproximadamente 80 graus e depois zerava a leitura, escondendo o movimento.
+POTENCIA_MIN_GIRO = 6
+POTENCIA_MAX_GIRO = 18
+SINAL_GIRO = 1
 
 # ==========================================
 # MEMORIA PERMANENTE
@@ -270,41 +270,17 @@ def giro_interno(angulo, velocidade=45):
     esperar_imu()
     wait(200)
 
-    # CALIBRACAO CURTA DO SENTIDO REAL DAS RODAS.
+    # Comeca a medicao no ponto em que o robo realmente esta.
+    # Nao movimenta os motores para descobrir o sentido.
     hub.imu.reset_heading(0)
-    mL.dc(POTENCIA_TESTE_GIRO)
-    mR.dc(-POTENCIA_TESTE_GIRO)
-    wait(TEMPO_TESTE_GIRO)
-    parar()
-    wait(150)
+    wait(50)
 
-    deslocamento_teste = hub.imu.heading()
+    limite_potencia = limitar(
+        abs(velocidade),
+        POTENCIA_MIN_GIRO,
+        POTENCIA_MAX_GIRO
+    )
 
-    if abs(deslocamento_teste) < 0.5:
-        hub.imu.reset_heading(0)
-        mL.dc(POTENCIA_TESTE_GIRO + 5)
-        mR.dc(-(POTENCIA_TESTE_GIRO + 5))
-        wait(TEMPO_TESTE_GIRO)
-        parar()
-        wait(150)
-        deslocamento_teste = hub.imu.heading()
-
-    if abs(deslocamento_teste) < 0.5:
-        print("GIRO ABORTADO: IMU NAO DETECTOU MOVIMENTO")
-        print("VERIFIQUE PORTAS E/F, RODAS E ATRITO")
-        registrar_falha()
-        return False
-
-    # Heading positivo no Pybricks significa giro horario.
-    sinal_motor = 1
-    if deslocamento_teste * angulo < 0:
-        sinal_motor = -1
-
-    parar()
-    wait(100)
-    hub.imu.reset_heading(0)
-
-    potencia_max = limitar(abs(velocidade), 12, POTENCIA_MAX_GIRO)
     relogio = StopWatch()
     ultimo_tempo = relogio.time()
     ultimo_heading = hub.imu.heading()
@@ -312,6 +288,7 @@ def giro_interno(angulo, velocidade=45):
     concluiu = False
 
     while relogio.time() < TIMEOUT_GIRO:
+
         wait(10)
         agora = relogio.time()
         heading = hub.imu.heading()
@@ -321,28 +298,53 @@ def giro_interno(angulo, velocidade=45):
         if dt <= 0:
             dt = 0.01
 
-        taxa_giro = (heading - ultimo_heading) / dt
+        taxa = (heading - ultimo_heading) / dt
         ultimo_tempo = agora
         ultimo_heading = heading
 
-        if abs(erro) <= TOLERANCIA_GIRO and abs(taxa_giro) <= 4:
+        # Confirma chegada somente quando o robo ja estiver quase parado.
+        if abs(erro) <= TOLERANCIA_GIRO and abs(taxa) <= 5:
             estavel += 1
             if estavel >= 5:
                 concluiu = True
                 break
+            mL.hold()
+            mR.hold()
+            continue
         else:
             estavel = 0
 
-        potencia = KP_GIRO * erro - KD_GIRO * taxa_giro
-        potencia = limitar(potencia, -potencia_max, potencia_max)
+        sentido_erro = 1 if erro > 0 else -1
+        taxa_na_direcao = taxa * sentido_erro
 
-        if abs(erro) > 2 and abs(potencia) < POTENCIA_MIN_GIRO:
-            if potencia * erro > 0:
-                potencia = POTENCIA_MIN_GIRO if erro > 0 else -POTENCIA_MIN_GIRO
+        # Perfil em etapas: rapido longe do alvo e lento na aproximacao.
+        restante = abs(erro)
+        if restante > 35:
+            potencia = limite_potencia
+        elif restante > 15:
+            potencia = min(limite_potencia, 12)
+        elif restante > 5:
+            potencia = min(limite_potencia, 8)
+        else:
+            potencia = POTENCIA_MIN_GIRO
 
-        potencia *= sinal_motor
-        mL.dc(int(potencia))
-        mR.dc(int(-potencia))
+        # Se a inercia ja estiver levando o robo ao alvo muito rapido,
+        # aplica torque contrario para frear em vez de continuar acelerando.
+        if taxa_na_direcao > 180 and restante < 45:
+            comando = -POTENCIA_MIN_GIRO * sentido_erro
+        elif taxa_na_direcao > 100 and restante < 35:
+            comando = sentido_erro * min(potencia, 7)
+        else:
+            comando = sentido_erro * potencia
+
+        comando = limitar(
+            comando * SINAL_GIRO,
+            -limite_potencia,
+            limite_potencia
+        )
+
+        mL.dc(int(comando))
+        mR.dc(int(-comando))
 
     parar()
     wait(150)
@@ -353,7 +355,6 @@ def giro_interno(angulo, velocidade=45):
     print("GIRO ALVO:", angulo)
     print("GIRO REAL:", angulo_real)
     print("ERRO FINAL:", erro_final)
-    print("SENTIDO CALIBRADO:", sinal_motor)
 
     if not concluiu:
         print("GIRO NAO ATINGIU A TOLERANCIA")
