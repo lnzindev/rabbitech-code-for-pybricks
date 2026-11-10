@@ -1,14 +1,14 @@
-name: Rabbitech source integrity
+name: Pybricks source integrity
 
 on:
   push:
-    branches: [main, competition-runtime-150s]
+    branches: [main]
   pull_request:
-    branches: [main, competition-runtime-150s]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   integrity:
@@ -16,74 +16,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ github.ref }}
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-
-      - name: Detect and apply staged release bundle
-        id: release
-        shell: bash
-        run: |
-          python - <<'PY'
-          import base64
-          import os
-          from pathlib import Path, PurePosixPath
-          from zipfile import ZipFile, BadZipFile
-
-          parts = [Path(f"release_payload.part{i:02d}") for i in range(1, 9)]
-          if not all(p.is_file() for p in parts):
-              with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-                  output.write("ready=false\\n")
-                  output.write("applied=false\\n")
-              print("Release bundle incomplete; validation is deferred until all parts arrive.")
-              raise SystemExit(0)
-
-          encoded = "".join(p.read_text().strip() for p in parts)
-          try:
-              raw = base64.b64decode(encoded, validate=True)
-              archive_path = Path("/tmp/rabbitech-release.zip")
-              archive_path.write_bytes(raw)
-              with ZipFile(archive_path) as archive:
-                  for item in archive.infolist():
-                      name = PurePosixPath(item.filename)
-                      if name.is_absolute() or ".." in name.parts:
-                          raise ValueError("Unsafe archive path: " + item.filename)
-                  archive.extractall(".")
-          except (ValueError, BadZipFile) as error:
-              raise SystemExit("Invalid release bundle: " + str(error))
-
-          for path in parts:
-              path.unlink()
-
-          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-              output.write("ready=true\\n")
-              output.write("applied=true\\n")
-          print("Staged release bundle extracted.")
-          PY
-
       - name: Verify approved source manifest
-        if: steps.release.outputs.ready == 'true'
         run: python tools/integrity.py verify
-
       - name: Check Python syntax
-        if: steps.release.outputs.ready == 'true'
-        run: python -m py_compile $(git ls-files '*.py')
-
-      - name: Commit validated release bundle
-        if: ${{ github.event_name == 'push' && steps.release.outputs.applied == 'true' }}
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
-          git commit -m "Apply validated Rabbitech Pybricks release"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+        run: python -m py_compile main.py base.py memoria.py saida_1.py saida_2.py saida_3.py saida_4.py saida_5.py saida_6.py saida_7.py saida_8.py
