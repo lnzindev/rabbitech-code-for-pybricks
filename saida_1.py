@@ -5,12 +5,14 @@ CONFIGURADA = True
 
 def executar():
     print("SAIDA 1")
+    falha_local = False
 
-    # Cada falha e registrada, mas nao encerra a saida inteira.
-    # As proximas etapas do roteiro continuam enquanto a rodada estiver ativa.
+    # Falhas locais sao registradas, mas nao encerram a rodada.
+    # O roteiro tenta executar as proximas etapas cadastradas.
     if not andar(200, 60):
         if not verificar_competicao():
             return False
+        falha_local = True
         print("FALHA LOCAL: AVANCO. TENTANDO PROXIMA ETAPA.")
 
     if not esperar(500):
@@ -19,6 +21,7 @@ def executar():
     if not andar(-200, 60):
         if not verificar_competicao():
             return False
+        falha_local = True
         print("FALHA LOCAL: RECUO. TENTANDO PROXIMA ETAPA.")
 
     if not esperar(500):
@@ -27,6 +30,10 @@ def executar():
     if not girar(90, 45):
         if not verificar_competicao():
             return False
-        print("FALHA LOCAL: GIRO. SAIDA SERA CONSIDERADA COM FALHA.")
+        falha_local = True
+        print("FALHA LOCAL: GIRO. PROXIMAS SAIDAS SERAO MANTIDAS.")
 
-    return verificar_competicao()
+    if not verificar_competicao():
+        return False
+
+    return not falha_local
