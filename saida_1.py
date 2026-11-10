@@ -1,15 +1,23 @@
-from base import *
+from base import andar, esperar, girar
 
 def executar():
 
     print("SAIDA 1")
 
-    andar(200, 60)    # Frente
+    if not andar(200, 60):
+        print("SAIDA 1 INTERROMPIDA: FALHA AO AVANCAR")
+        return False
+
     esperar(500)
 
-    andar(-200, 60)   # Ré
+    if not andar(-200, 60):
+        print("SAIDA 1 INTERROMPIDA: FALHA AO RECUAR")
+        return False
+
     esperar(500)
 
-    girar(90, 45)     # Giro de 90 graus
+    if not girar(90, 45):
+        print("SAIDA 1 INTERROMPIDA: FALHA NO GIRO")
+        return False
 
     return True
