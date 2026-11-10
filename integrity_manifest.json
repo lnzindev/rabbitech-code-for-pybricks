@@ -3,16 +3,16 @@
   "manifest_version": 1,
   "algorithm": "git-blob-sha1",
   "files": {
-    "main.py": "3e803b090f94c9e13fa1bfc473a47c4231f5c07d",
-    "base.py": "6a17fa5c07e284862f6e74f9743d5b4e7f5a75fe",
+    "main.py": "c49c950ef94e87b14c90d71a4513951c47fd35ae",
+    "base.py": "47ae3ab07f0da7014ac040a97120b720364f70d5",
     "memoria.py": "661666d0bf082828e4bf01b2b10c8eec1af00b94",
-    "saida_1.py": "33fbc3216d996e46d09f4c6fe4a88787f5bb8821",
-    "saida_2.py": "b922f20e834dc60c7f54de609a66e6bc132b84d9",
-    "saida_3.py": "4da02a52c698b88f19fdaff30420a82475e3d82d",
-    "saida_4.py": "1c662f30892e7ad18a05503a97e9259a4990526f",
-    "saida_5.py": "867cb6bfd534d10f7c211d49b220ba1e6aaa8aae",
-    "saida_6.py": "bdb4fd287dab72e107038ef983be6f18e1729042",
-    "saida_7.py": "f002b0ae8538030cc9b2fee35570a92f855dcedd",
-    "saida_8.py": "d07168ab6171e8ff16aab4f9f37030c3392b741c"
+    "saida_1.py": "f0c19e2bce7f848e50171919a373165ec6813acf",
+    "saida_2.py": "b1fbdf27cc85f411d091af778bebcf7abb28af5f",
+    "saida_3.py": "2ff338070c3bd5f2a9a22e45d966c8dc56e56c72",
+    "saida_4.py": "7008c207bcc5130cb34c8c896d44aecbc5d03c11",
+    "saida_5.py": "8022226de7c4db2f8fc7a11446ad9999488a58b6",
+    "saida_6.py": "df560e1dc7bbe50c0681d27ff8c4d316b23330ad",
+    "saida_7.py": "20c5a1ea016322c2d9022352990ae39323cf9ae3",
+    "saida_8.py": "fb67b0a475cb7451e735e3a0b971227b603691ef"
   }
 }
