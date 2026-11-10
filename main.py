@@ -81,19 +81,16 @@ def esperar_proxima_saida():
     return verificar_competicao()
 
 
-# ==========================================
-# PREPARACAO
-# ==========================================
+def executar_controlador():
+    if not esperar_imu():
+        return False
 
-esperar_imu()
-parar()
-hub.display.text("READY")
+    parar()
+    hub.display.char("R")
 
-# ==========================================
-# EXECUCAO DA RODADA
-# ==========================================
+    if not esperar_inicio():
+        return False
 
-if esperar_inicio():
     iniciar_competicao()
     primeira_saida = True
 
@@ -119,14 +116,15 @@ if esperar_inicio():
         if not verificar_competicao():
             break
 
-        hub.display.text(str(nome[-1]))
+        numero = int(nome[-1])
+        hub.display.number(numero)
         print("EXECUTANDO:", nome)
 
         resultado = programa()
         parar()
 
         # Uma falha local nao encerra a rodada.
-        # O proximo roteiro continua disponivel enquanto houver tempo.
+        # A proxima saida continua disponivel enquanto houver tempo.
         if not verificar_competicao():
             break
 
@@ -143,16 +141,18 @@ if esperar_inicio():
         while verificar_competicao():
             wait(10)
 
+    return True
+
 
 # ==========================================
-# ENCERRAMENTO CONTROLADO
+# EXECUCAO E ENCERRAMENTO
 # ==========================================
 
-restante = tempo_restante()
+executar_controlador()
 
-if restante <= 0:
-    hub.display.text("FIM")
+if tempo_restante() <= 0:
+    hub.display.char("F")
 else:
-    hub.display.text("STOP")
+    hub.display.char("S")
 
 finalizar_competicao()
