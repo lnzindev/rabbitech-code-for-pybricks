@@ -1,23 +1,39 @@
-from base import andar, esperar, girar
+from base import andar, esperar, girar, verificar_competicao
+
+CONFIGURADA = True
+
 
 def executar():
-
     print("SAIDA 1")
+    falha_local = False
 
+    # Falhas locais sao registradas, mas nao encerram a rodada.
+    # O roteiro tenta executar as proximas etapas cadastradas.
     if not andar(200, 60):
-        print("SAIDA 1 INTERROMPIDA: FALHA AO AVANCAR")
-        return False
+        if not verificar_competicao():
+            return False
+        falha_local = True
+        print("FALHA LOCAL: AVANCO. TENTANDO PROXIMA ETAPA.")
 
-    esperar(500)
+    if not esperar(500):
+        return False
 
     if not andar(-200, 60):
-        print("SAIDA 1 INTERROMPIDA: FALHA AO RECUAR")
-        return False
+        if not verificar_competicao():
+            return False
+        falha_local = True
+        print("FALHA LOCAL: RECUO. TENTANDO PROXIMA ETAPA.")
 
-    esperar(500)
+    if not esperar(500):
+        return False
 
     if not girar(90, 45):
-        print("SAIDA 1 INTERROMPIDA: FALHA NO GIRO")
+        if not verificar_competicao():
+            return False
+        falha_local = True
+        print("FALHA LOCAL: GIRO. PROXIMAS SAIDAS SERAO MANTIDAS.")
+
+    if not verificar_competicao():
         return False
 
-    return True
+    return not falha_local

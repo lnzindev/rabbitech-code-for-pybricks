@@ -1,15 +1,25 @@
 # ==========================================
-# RABBITECH - CONTROLADOR SEQUENCIAL
+# RABBITECH - CONTROLADOR DE COMPETICAO
 # Pybricks MicroPython 3.6.1
-# Execute SOMENTE este arquivo.
-# Os hashes são verificados no processo de publicação; o Hub não oferece
-# leitura portátil dos arquivos-fonte instalados para validação runtime.
+#
+# Uma rodada possui 150 segundos totais.
+# Falha de uma saida nao encerra as outras.
+# CENTER e monitorado pelo proprio programa.
 # ==========================================
 
 from pybricks.parameters import Button
 from pybricks.tools import wait
 
-from base import hub, parar, esperar_imu
+from base import (
+    hub,
+    parar,
+    esperar_imu,
+    iniciar_competicao,
+    verificar_competicao,
+    tempo_restante,
+    finalizar_competicao,
+    solicitar_parada,
+)
 
 from saida_1 import executar as programa1
 from saida_2 import executar as programa2
@@ -22,103 +32,156 @@ from saida_8 import executar as programa8
 
 
 # ==========================================
-# LISTA DAS OITO SAIDAS
+# CONFIGURACAO DAS SAIDAS
+#
+# True  = executar
+# False = ignorar
 # ==========================================
 
 SAIDAS = [
-   
-    ("SAIDA 1", programa1),
-    ("SAIDA 2", programa2),
-    ("SAIDA 3", programa3),
-    ("SAIDA 4", programa4),
-    ("SAIDA 5", programa5),
-    ("SAIDA 6", programa6),
-    ("SAIDA 7", programa7),
-    ("SAIDA 8", programa8),
+    ("SAIDA 1", programa1, True),
+    ("SAIDA 2", programa2, False),
+    ("SAIDA 3", programa3, False),
+    ("SAIDA 4", programa4, False),
+    ("SAIDA 5", programa5, False),
+    ("SAIDA 6", programa6, False),
+    ("SAIDA 7", programa7, False),
+    ("SAIDA 8", programa8, False),
 ]
 
 
-
-# ==========================================
-# ESPERAR BOTAO ESQUERDO
-# ==========================================
-
-def esperar_botao_esquerdo():
-
-    # Esperar o botao ser solto
-    while Button.LEFT in hub.buttons.pressed():
-        wait(10)
-
-    # Esperar um novo aperto
+def esperar_inicio():
+    # Aguarda um novo pressionamento de LEFT.
     while Button.LEFT not in hub.buttons.pressed():
+        if Button.CENTER in hub.buttons.pressed():
+            solicitar_parada()
+            return False
+
         wait(10)
 
-    # Esperar soltar novamente
+    # Aguarda LEFT ser solto.
     while Button.LEFT in hub.buttons.pressed():
+        if Button.CENTER in hub.buttons.pressed():
+            solicitar_parada()
+            return False
+
         wait(10)
 
+    return True
 
-# ==========================================
-# INICIAR CONTROLADOR
-# ==========================================
 
-esperar_imu()
-parar()
+def esperar_proxima_saida():
+    # Aguarda LEFT ser solto.
+    while Button.LEFT in hub.buttons.pressed():
+        if not verificar_competicao():
+            return False
 
-numero = 1
-falhou = False
+        wait(10)
 
-# ==========================================
-# EXECUTAR SAIDAS EM SEQUENCIA
-# ==========================================
+    # Aguarda um novo pressionamento.
+    while Button.LEFT not in hub.buttons.pressed():
+        if not verificar_competicao():
+            return False
 
-for item in SAIDAS:
+        wait(10)
 
-    nome = item[0]
-    programa = item[1]
+    # Aguarda a liberacao do botao.
+    while Button.LEFT in hub.buttons.pressed():
+        if not verificar_competicao():
+            return False
 
-    # Mostrar numero da saida
-    hub.display.number(numero)
+        wait(10)
 
-    print("AGUARDANDO SAIDA", numero, nome)
+    return verificar_competicao()
 
-    # Esperar aperto do botao esquerdo
-    esperar_botao_esquerdo()
 
-    parar()
+def executar_controlador():
 
-    print("EXECUTANDO:", nome)
-
-    # Executar programacao individual
-    resultado = programa()
+    if not esperar_imu():
+        return False
 
     parar()
+    hub.display.char("R")
 
-    # Verificar se ocorreu uma falha
-    if resultado is False:
+    if not esperar_inicio():
+        return False
 
-        hub.display.text("ERRO")
+    iniciar_competicao()
 
-        print("SAIDA INTERROMPIDA:", nome)
+    primeira_saida = True
 
-        falhou = True
-        break
+    for nome, programa, configurada in SAIDAS:
 
-    print("SAIDA CONCLUIDA:", nome)
+        if not verificar_competicao():
+            break
 
-    numero += 1
+        if not configurada:
+            print(nome, "NAO CONFIGURADA - IGNORADA")
+            continue
+
+        if not primeira_saida:
+            print("AGUARDANDO PARTIDA:", nome)
+
+            if not esperar_proxima_saida():
+                break
+
+        primeira_saida = False
+
+        if not verificar_competicao():
+            break
+
+        numero = int(nome[-1])
+
+        hub.display.number(numero)
+        print("EXECUTANDO:", nome)
+
+        try:
+            resultado = programa()
+
+            if resultado is False:
+                print(nome, "RETORNOU FALHA.")
+            else:
+                print(nome, "CONCLUIDA.")
+
+        except Exception as erro:
+            print("ERRO NA", nome, ":", erro)
+            print("TENTANDO CONTINUAR A RODADA.")
+
+        finally:
+            parar()
+
+        if not verificar_competicao():
+            break
+
+    # Aguarda o fim oficial da rodada.
+    if verificar_competicao():
+        print("ROTAS FINALIZADAS. AGUARDANDO FIM DA RODADA.")
+
+        while verificar_competicao():
+            wait(10)
+
+    return True
 
 
 # ==========================================
-# FINALIZAR CONTROLADOR
+# EXECUCAO E ENCERRAMENTO SEGURO
 # ==========================================
 
-parar()
+try:
+    executar_controlador()
 
-if falhou:
-    hub.display.text("ERRO")
-    print("CONTROLADOR INTERROMPIDO")
+except Exception as erro:
+    print("ERRO NO CONTROLADOR:", erro)
+    solicitar_parada()
 
-else:
-    hub.display.text("FIM")
-    print("TODAS AS SAIDAS FINALIZADAS")
+finally:
+    # Captura o tempo antes de finalizar a competicao.
+    restante = tempo_restante()
+
+    parar()
+    finalizar_competicao()
+
+    if restante <= 0:
+        hub.display.char("F")
+    else:
+        hub.display.char("S")

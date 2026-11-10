@@ -15,7 +15,7 @@
 # ==========================================
 
 from pybricks.hubs import PrimeHub
-from pybricks.parameters import Direction, Port
+from pybricks.parameters import Button, Direction, Port, Stop
 from pybricks.pupdevices import Motor
 from pybricks.tools import wait, StopWatch
 import memoria as memoria_store
@@ -25,6 +25,7 @@ import memoria as memoria_store
 # ==========================================
 
 hub = PrimeHub()
+hub.system.set_stop_button(None)
 
 mL = Motor(Port.E, Direction.COUNTERCLOCKWISE)
 mR = Motor(Port.F, Direction.CLOCKWISE)
@@ -69,22 +70,110 @@ movimentos_concluidos = 0
 movimentos_falhos = 0
 
 # ==========================================
+# CONTROLE DA RODADA DE COMPETICAO
+# ==========================================
+
+TEMPO_COMPETICAO = 150000
+_relogio_competicao = None
+_competicao_ativa = False
+_parada_solicitada = False
+_motivo_fim = None
+
+
+def iniciar_competicao():
+    global _relogio_competicao, _competicao_ativa
+    global _parada_solicitada, _motivo_fim
+
+    _relogio_competicao = StopWatch()
+    _competicao_ativa = True
+    _parada_solicitada = False
+    _motivo_fim = None
+
+    print("RODADA INICIADA: 150 SEGUNDOS")
+    return True
+
+
+def solicitar_parada():
+    global _parada_solicitada, _motivo_fim
+
+    _parada_solicitada = True
+    _motivo_fim = "PARADA SOLICITADA"
+
+    print("PARADA MANUAL SOLICITADA")
+    return True
+
+
+def verificar_competicao():
+    global _parada_solicitada, _motivo_fim
+
+    if _parada_solicitada:
+        return False
+
+    if Button.CENTER in hub.buttons.pressed():
+        _parada_solicitada = True
+        _motivo_fim = "BOTAO CENTRAL"
+        print("RODADA INTERROMPIDA PELO BOTAO CENTRAL")
+        return False
+
+    if not _competicao_ativa:
+        return True
+
+    if _motivo_fim == "TEMPO ESGOTADO":
+        return False
+
+    if _relogio_competicao.time() >= TEMPO_COMPETICAO:
+        _motivo_fim = "TEMPO ESGOTADO"
+        print("TEMPO OFICIAL ESGOTADO")
+        return False
+
+    return True
+
+
+def tempo_restante():
+    if not _competicao_ativa or _relogio_competicao is None:
+        return TEMPO_COMPETICAO
+
+    return max(0, TEMPO_COMPETICAO - _relogio_competicao.time())
+
+
+def esperar_controlado(tempo_ms):
+    restante = max(0, int(tempo_ms))
+
+    while restante > 0:
+        if not verificar_competicao():
+            return False
+
+        intervalo = min(10, restante)
+        wait(intervalo)
+        restante -= intervalo
+
+    return verificar_competicao()
+
+
+def finalizar_competicao():
+    global _competicao_ativa
+
+    parar()
+    parar_garras()
+    _competicao_ativa = False
+    hub.system.set_stop_button(Button.CENTER)
+
+    print("FIM DA RODADA:", _motivo_fim)
+    return True
+
+
+# ==========================================
 # CONFIGURACAO DOS GIROS
 # ==========================================
 
 KP_T = 1.5
 KD_T = 0.3
 
-TOLERANCIA_GIRO = 1.5
+TOLERANCIA_GIRO = 3.0
 TIMEOUT_GIRO = 8000
 
-# Controle do giro pela IMU.
-# O heading positivo do Pybricks corresponde a giro horario.
-# O giro usa somente a IMU durante a manobra.
-# Nao existe pulso de calibracao antes do giro: ele deslocava o robo
-# aproximadamente 80 graus e depois zerava a leitura, escondendo o movimento.
-POTENCIA_MIN_GIRO = 6
-POTENCIA_MAX_GIRO = 18
+POTENCIA_MIN_GIRO = 25
+POTENCIA_MAX_GIRO = 40
 SINAL_GIRO = 1
 
 # ==========================================
@@ -102,21 +191,30 @@ def carregar_aprendizado():
     global memoria_frente, memoria_re
     global movimentos_concluidos, movimentos_falhos
 
-    (memoria_frente, memoria_re,
-     movimentos_concluidos, movimentos_falhos) = memoria_store.carregar(hub)
+    (
+        memoria_frente,
+        memoria_re,
+        movimentos_concluidos,
+        movimentos_falhos
+    ) = memoria_store.carregar(hub)
+
     return True
 
 
 def registrar_falha():
     global movimentos_falhos
+
     movimentos_falhos = min(65535, movimentos_falhos + 1)
+
     print("MOVIMENTO FALHOU")
     salvar_aprendizado()
 
 
 def registrar_sucesso():
     global movimentos_concluidos
+
     movimentos_concluidos = min(65535, movimentos_concluidos + 1)
+
     print("MOVIMENTO CONCLUIDO")
     salvar_aprendizado()
 
@@ -135,18 +233,20 @@ def limitar(valor, minimo=-100, maximo=100):
 def esperar_imu():
 
     while not hub.imu.ready():
+        if not verificar_competicao():
+            return False
+
         wait(10)
+
+    return verificar_competicao()
 
 
 def parar():
-
     mL.hold()
     mR.hold()
-    wait(100)
 
 
 def distancia_percorrida():
-
     return (
         abs(mL.angle()) + abs(mR.angle())
     ) / 2
@@ -185,13 +285,37 @@ def velocidade_rampa(
 # CONTROLE DAS GARRAS
 # ==========================================
 
+def mover_motor_supervisionado(motor, angulo, velocidade):
+
+    if not verificar_competicao():
+        return False
+
+    motor.run_angle(
+        velocidade,
+        angulo,
+        then=Stop.HOLD,
+        wait=False
+    )
+
+    while not motor.done():
+
+        if not verificar_competicao():
+            motor.hold()
+            return False
+
+        wait(10)
+
+    return verificar_competicao()
+
+
 def garra_esquerda(angulo, velocidade=None):
 
     if velocidade is None:
         velocidade = VELOCIDADE_GARRA
 
-    garra_esq.run_angle(velocidade, angulo)
-    return True
+    return mover_motor_supervisionado(
+        garra_esq, angulo, velocidade
+    )
 
 
 def garra_direita(angulo, velocidade=None):
@@ -199,26 +323,34 @@ def garra_direita(angulo, velocidade=None):
     if velocidade is None:
         velocidade = VELOCIDADE_GARRA
 
-    garra_dir.run_angle(velocidade, angulo)
-    return True
+    return mover_motor_supervisionado(
+        garra_dir, angulo, velocidade
+    )
 
 
 def abrir_garras():
 
-    garra_esquerda(-ANGULO_GARRA_ABERTA)
-    garra_direita(ANGULO_GARRA_ABERTA)
+    if not garra_esquerda(-ANGULO_GARRA_ABERTA):
+        return False
+
+    if not garra_direita(ANGULO_GARRA_ABERTA):
+        return False
+
     return True
 
 
 def fechar_garras():
 
-    garra_esquerda(ANGULO_GARRA_FECHADA)
-    garra_direita(-ANGULO_GARRA_FECHADA)
+    if not garra_esquerda(ANGULO_GARRA_FECHADA):
+        return False
+
+    if not garra_direita(-ANGULO_GARRA_FECHADA):
+        return False
+
     return True
 
 
 def parar_garras():
-
     garra_esq.hold()
     garra_dir.hold()
     return True
@@ -242,7 +374,11 @@ def calcular_giro(erro, ultimo_erro, velocidade):
         velocidade
     )
 
-    minimo = min(9, velocidade) if abs(erro) > 10 else min(4, velocidade)
+    minimo = (
+        min(9, velocidade)
+        if abs(erro) > 10
+        else min(4, velocidade)
+    )
 
     if correcao > 0:
         correcao = max(minimo, correcao)
@@ -267,13 +403,18 @@ def giro_interno(angulo, velocidade=45):
         return True
 
     parar()
-    esperar_imu()
-    wait(200)
 
-    # Comeca a medicao no ponto em que o robo realmente esta.
-    # Nao movimenta os motores para descobrir o sentido.
+    if not esperar_imu():
+        return False
+
+    if not esperar_controlado(200):
+        return False
+
+    # Zera a referencia da IMU com o robo parado.
     hub.imu.reset_heading(0)
-    wait(50)
+
+    if not esperar_controlado(50):
+        return False
 
     limite_potencia = limitar(
         abs(velocidade),
@@ -281,15 +422,20 @@ def giro_interno(angulo, velocidade=45):
         POTENCIA_MAX_GIRO
     )
 
+    # ETAPA 1: giro principal com reducao de potencia.
     relogio = StopWatch()
     ultimo_tempo = relogio.time()
     ultimo_heading = hub.imu.heading()
     estavel = 0
-    concluiu = False
 
     while relogio.time() < TIMEOUT_GIRO:
 
+        if not verificar_competicao():
+            parar()
+            return False
+
         wait(10)
+
         agora = relogio.time()
         heading = hub.imu.heading()
         erro = angulo - heading
@@ -302,34 +448,42 @@ def giro_interno(angulo, velocidade=45):
         ultimo_tempo = agora
         ultimo_heading = heading
 
-        # Confirma chegada somente quando o robo ja estiver quase parado.
-        if abs(erro) <= TOLERANCIA_GIRO and abs(taxa) <= 5:
-            estavel += 1
-            if estavel >= 5:
-                concluiu = True
-                break
-            mL.hold()
-            mR.hold()
-            continue
-        else:
-            estavel = 0
-
+        restante = abs(erro)
         sentido_erro = 1 if erro > 0 else -1
         taxa_na_direcao = taxa * sentido_erro
 
-        # Perfil em etapas: rapido longe do alvo e lento na aproximacao.
-        restante = abs(erro)
+        # Ao entrar na faixa, segura e deixa a inercia diminuir.
+        if restante <= TOLERANCIA_GIRO:
+            parar()
+
+            if abs(taxa) <= 8:
+                estavel += 1
+            else:
+                estavel = 0
+
+            if estavel >= 3:
+                break
+
+            continue
+
+        estavel = 0
+
         if restante > 35:
             potencia = limite_potencia
         elif restante > 15:
-            potencia = min(limite_potencia, 12)
+            potencia = max(
+                POTENCIA_MIN_GIRO,
+                int(limite_potencia * 0.75)
+            )
         elif restante > 5:
-            potencia = min(limite_potencia, 8)
+            potencia = max(
+                POTENCIA_MIN_GIRO,
+                int(limite_potencia * 0.60)
+            )
         else:
             potencia = POTENCIA_MIN_GIRO
 
-        # Se a inercia ja estiver levando o robo ao alvo muito rapido,
-        # aplica torque contrario para frear em vez de continuar acelerando.
+        # Frenagem antecipada quando a velocidade angular esta alta.
         if taxa_na_direcao > 180 and restante < 45:
             comando = -POTENCIA_MIN_GIRO * sentido_erro
         elif taxa_na_direcao > 100 and restante < 35:
@@ -346,9 +500,91 @@ def giro_interno(angulo, velocidade=45):
         mL.dc(int(comando))
         mR.dc(int(-comando))
 
+    # ETAPA 2: para, espera a inercia e mede o erro real.
     parar()
-    wait(150)
 
+    if not esperar_controlado(150):
+        return False
+
+    angulo_real = hub.imu.heading()
+    erro_final = angulo - angulo_real
+
+    print("GIRO PRINCIPAL:", angulo_real)
+    print("ERRO ANTES DA CORRECAO:", erro_final)
+
+    if not verificar_competicao():
+        return False
+
+    # Nao tenta corrigir um erro grande com pequenos pulsos.
+    LIMITE_ERRO_CORRECAO = 12.0
+    TOLERANCIA_FINAL_GIRO = 1.5
+    MAX_TENTATIVAS_CORRECAO = 5
+    TEMPO_MAX_CORRECAO = 1000
+
+    relogio_correcao = StopWatch()
+    tentativas = 0
+
+    while (
+        abs(erro_final) > TOLERANCIA_FINAL_GIRO
+        and abs(erro_final) <= LIMITE_ERRO_CORRECAO
+        and tentativas < MAX_TENTATIVAS_CORRECAO
+        and relogio_correcao.time() < TEMPO_MAX_CORRECAO
+    ):
+
+        if not verificar_competicao():
+            parar()
+            return False
+
+        tentativas += 1
+
+        sentido_erro = 1 if erro_final > 0 else -1
+        restante = abs(erro_final)
+
+        # Controle proporcional limitado: erro menor gera pulso menor.
+        potencia_correcao = limitar(
+            int(22 + restante * 1.1),
+            POTENCIA_MIN_GIRO,
+            33
+        )
+
+        pulso_ms = limitar(
+            int(12 + restante * 7),
+            15,
+            85
+        )
+
+        comando = int(
+            sentido_erro * potencia_correcao * SINAL_GIRO
+        )
+
+        mL.dc(comando)
+        mR.dc(-comando)
+
+        if not esperar_controlado(pulso_ms):
+            parar()
+            return False
+
+        parar()
+
+        # Aguarda a mecanica assentar antes de medir novamente.
+        if not esperar_controlado(110):
+            return False
+
+        angulo_real = hub.imu.heading()
+        erro_final = angulo - angulo_real
+
+        print(
+            "CORRECAO", tentativas,
+            "ANGULO:", angulo_real,
+            "ERRO:", erro_final
+        )
+
+    parar()
+
+    if not esperar_controlado(100):
+        return False
+
+    # Medicao final independente da ultima tentativa.
     angulo_real = hub.imu.heading()
     erro_final = angulo - angulo_real
 
@@ -356,22 +592,30 @@ def giro_interno(angulo, velocidade=45):
     print("GIRO REAL:", angulo_real)
     print("ERRO FINAL:", erro_final)
 
-    if not concluiu:
-        print("GIRO NAO ATINGIU A TOLERANCIA")
+    if not verificar_competicao():
+        return False
+
+    if abs(erro_final) > TOLERANCIA_FINAL_GIRO:
+        print("GIRO NAO ATINGIU A PRECISAO FINAL")
         registrar_falha()
         return False
 
+    print("GIRO APROVADO COM REFINAMENTO IMU")
     registrar_sucesso()
     return True
 
 
+# ==========================================
 # GIRO COM UMA RODA
 # ==========================================
 
 def giro_uma_roda_interno(angulo, velocidade=45):
 
     parar()
-    esperar_imu()
+
+    if not esperar_imu():
+        return False
+
     hub.imu.reset_heading(0)
 
     ultimo_erro = 0
@@ -384,6 +628,10 @@ def giro_uma_roda_interno(angulo, velocidade=45):
         mL.hold()
 
     while relogio.time() < TIMEOUT_GIRO:
+
+        if not verificar_competicao():
+            parar()
+            return False
 
         erro = angulo - hub.imu.heading()
 
@@ -406,6 +654,9 @@ def giro_uma_roda_interno(angulo, velocidade=45):
         wait(5)
 
     parar()
+
+    if not verificar_competicao():
+        return False
 
     if not concluiu:
         print("ERRO NO GIRO DE UMA RODA")
@@ -434,7 +685,10 @@ def andar_interno(
     global memoria_re
 
     parar()
-    esperar_imu()
+
+    if not esperar_imu():
+        return False
+
     hub.imu.reset_heading(0)
 
     mL.reset_angle(0)
@@ -469,6 +723,10 @@ def andar_interno(
         distancia_percorrida() < total
         and relogio.time() < tempo_limite
     ):
+
+        if not verificar_competicao():
+            parar()
+            return False
 
         agora = relogio.time()
         atual = distancia_percorrida()
@@ -561,6 +819,9 @@ def andar_interno(
 
     parar()
 
+    if not verificar_competicao():
+        return False
+
     if distancia_percorrida() < total:
         print("TEMPO LIMITE ATINGIDO")
         registrar_falha()
@@ -643,7 +904,13 @@ def girar_roda(angulo, velocidade=None):
 
 
 def esperar(tempo):
-    wait(tempo)
+    return esperar_controlado(tempo)
+
+
+def parar_missao():
+    solicitar_parada()
+    parar()
+    parar_garras()
     return True
 
 
