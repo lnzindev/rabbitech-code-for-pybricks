@@ -1,15 +1,7 @@
-from base import *
+from base import parar
 
 def executar():
-
-    print("SAIDA 1")
-
-    andar(200, 60)    # Frente
-    esperar(500)
-
-    andar(-200, 60)   # Ré
-    esperar(500)
-
-    girar(90, 45)     # Giro de 90 graus
-
-    return True
+    print("SAIDA 6 NAO CONFIGURADA")
+    print("Nenhuma rota foi cadastrada para esta saida.")
+    parar()
+    return False
