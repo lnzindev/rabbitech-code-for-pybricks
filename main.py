@@ -21,67 +21,82 @@ from base import (
     solicitar_parada,
 )
 
-from saida_1 import executar as programa1, CONFIGURADA as ativa1
-from saida_2 import executar as programa2, CONFIGURADA as ativa2
-from saida_3 import executar as programa3, CONFIGURADA as ativa3
-from saida_4 import executar as programa4, CONFIGURADA as ativa4
-from saida_5 import executar as programa5, CONFIGURADA as ativa5
-from saida_6 import executar as programa6, CONFIGURADA as ativa6
-from saida_7 import executar as programa7, CONFIGURADA as ativa7
-from saida_8 import executar as programa8, CONFIGURADA as ativa8
+from saida_1 import executar as programa1
+from saida_2 import executar as programa2
+from saida_3 import executar as programa3
+from saida_4 import executar as programa4
+from saida_5 import executar as programa5
+from saida_6 import executar as programa6
+from saida_7 import executar as programa7
+from saida_8 import executar as programa8
 
+
+# ==========================================
+# CONFIGURACAO DAS SAIDAS
+#
+# True  = executar
+# False = ignorar
+# ==========================================
 
 SAIDAS = [
-    ("SAIDA 1", programa1, ativa1),
-    ("SAIDA 2", programa2, ativa2),
-    ("SAIDA 3", programa3, ativa3),
-    ("SAIDA 4", programa4, ativa4),
-    ("SAIDA 5", programa5, ativa5),
-    ("SAIDA 6", programa6, ativa6),
-    ("SAIDA 7", programa7, ativa7),
-    ("SAIDA 8", programa8, ativa8),
+    ("SAIDA 1", programa1, True),
+    ("SAIDA 2", programa2, False),
+    ("SAIDA 3", programa3, False),
+    ("SAIDA 4", programa4, False),
+    ("SAIDA 5", programa5, False),
+    ("SAIDA 6", programa6, False),
+    ("SAIDA 7", programa7, False),
+    ("SAIDA 8", programa8, False),
 ]
 
 
 def esperar_inicio():
-    # O primeiro toque em LEFT inicia o cronometro oficial.
+    # Aguarda um novo pressionamento de LEFT.
     while Button.LEFT not in hub.buttons.pressed():
         if Button.CENTER in hub.buttons.pressed():
             solicitar_parada()
             return False
+
         wait(10)
 
+    # Aguarda LEFT ser solto.
     while Button.LEFT in hub.buttons.pressed():
         if Button.CENTER in hub.buttons.pressed():
             solicitar_parada()
             return False
+
         wait(10)
 
     return True
 
 
 def esperar_proxima_saida():
-    # LEFT dispara a proxima saida cadastrada.
-    # O tempo da rodada continua contando enquanto aguarda.
+    # Aguarda LEFT ser solto.
     while Button.LEFT in hub.buttons.pressed():
         if not verificar_competicao():
             return False
+
         wait(10)
 
+    # Aguarda um novo pressionamento.
     while Button.LEFT not in hub.buttons.pressed():
         if not verificar_competicao():
             return False
+
         wait(10)
 
+    # Aguarda a liberacao do botao.
     while Button.LEFT in hub.buttons.pressed():
         if not verificar_competicao():
             return False
+
         wait(10)
 
     return verificar_competicao()
 
 
 def executar_controlador():
+
     if not esperar_imu():
         return False
 
@@ -92,12 +107,10 @@ def executar_controlador():
         return False
 
     iniciar_competicao()
+
     primeira_saida = True
 
-    for item in SAIDAS:
-        nome = item[0]
-        programa = item[1]
-        configurada = item[2]
+    for nome, programa, configurada in SAIDAS:
 
         if not verificar_competicao():
             break
@@ -108,6 +121,7 @@ def executar_controlador():
 
         if not primeira_saida:
             print("AGUARDANDO PARTIDA:", nome)
+
             if not esperar_proxima_saida():
                 break
 
@@ -117,27 +131,32 @@ def executar_controlador():
             break
 
         numero = int(nome[-1])
+
         hub.display.number(numero)
         print("EXECUTANDO:", nome)
 
-        resultado = programa()
-        parar()
+        try:
+            resultado = programa()
 
-        # Uma falha local nao encerra a rodada.
-        # A proxima saida continua disponivel enquanto houver tempo.
+            if resultado is False:
+                print(nome, "RETORNOU FALHA.")
+            else:
+                print(nome, "CONCLUIDA.")
+
+        except Exception as erro:
+            print("ERRO NA", nome, ":", erro)
+            print("TENTANDO CONTINUAR A RODADA.")
+
+        finally:
+            parar()
+
         if not verificar_competicao():
             break
 
-        if resultado is False:
-            print(nome, "TEVE FALHA LOCAL. RODADA CONTINUA.")
-        else:
-            print(nome, "CONCLUIDA.")
-
-    # Nao repetir automaticamente rotas ja executadas.
-    # Depois das saidas cadastradas, manter a rodada ativa ate 150 s
-    # ou ate o operador pressionar CENTER.
+    # Aguarda o fim oficial da rodada.
     if verificar_competicao():
-        print("ROTAS CADASTRADAS FINALIZADAS. AGUARDANDO FIM DA RODADA.")
+        print("ROTAS FINALIZADAS. AGUARDANDO FIM DA RODADA.")
+
         while verificar_competicao():
             wait(10)
 
@@ -145,14 +164,24 @@ def executar_controlador():
 
 
 # ==========================================
-# EXECUCAO E ENCERRAMENTO
+# EXECUCAO E ENCERRAMENTO SEGURO
 # ==========================================
 
-executar_controlador()
+try:
+    executar_controlador()
 
-if tempo_restante() <= 0:
-    hub.display.char("F")
-else:
-    hub.display.char("S")
+except Exception as erro:
+    print("ERRO NO CONTROLADOR:", erro)
+    solicitar_parada()
 
-finalizar_competicao()
+finally:
+    # Captura o tempo antes de finalizar a competicao.
+    restante = tempo_restante()
+
+    parar()
+    finalizar_competicao()
+
+    if restante <= 0:
+        hub.display.char("F")
+    else:
+        hub.display.char("S")
