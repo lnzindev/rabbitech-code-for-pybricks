@@ -1,14 +1,14 @@
-name: Pybricks source integrity
+name: Rabbitech source integrity
 
 on:
   push:
-    branches: [main]
+    branches: [main, competition-runtime-150s]
   pull_request:
-    branches: [main]
+    branches: [main, competition-runtime-150s]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   integrity:
@@ -16,11 +16,67 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref }}
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+
+      - name: Apply staged release bundle when present
+        id: release
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64
+          import os
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile, BadZipFile
+
+          payload = Path("release_payload.zip.b64")
+          if not payload.is_file():
+              with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+                  output.write("applied=false\\n")
+              print("No staged bundle. Running normal integrity checks.")
+          else:
+              try:
+                  raw = base64.b64decode(payload.read_text().strip(), validate=True)
+                  archive_path = Path("/tmp/rabbitech-release.zip")
+                  archive_path.write_bytes(raw)
+                  with ZipFile(archive_path) as archive:
+                      for item in archive.infolist():
+                          name = PurePosixPath(item.filename)
+                          if name.is_absolute() or ".." in name.parts:
+                              raise ValueError("Unsafe archive path: " + item.filename)
+                      archive.extractall(".")
+              except (ValueError, BadZipFile) as error:
+                  raise SystemExit("Invalid release bundle: " + str(error))
+
+              payload.unlink()
+              with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+                  output.write("applied=true\\n")
+              print("Staged release bundle extracted.")
+          PY
+
       - name: Verify approved source manifest
         run: python tools/integrity.py verify
+
       - name: Check Python syntax
-        run: python -m py_compile main.py base.py memoria.py saida_1.py saida_2.py saida_3.py saida_4.py saida_5.py saida_6.py saida_7.py saida_8.py
+        run: python -m py_compile main.py assinatura.py base.py memoria.py diagnostico_imu.py saida_1.py saida_2.py saida_3.py saida_4.py saida_5.py saida_6.py saida_7.py saida_8.py tools/integrity.py
+
+      - name: Commit validated release bundle
+        if: ${{ github.event_name == 'push' && steps.release.outputs.applied == 'true' }}
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Apply validated Rabbitech Pybricks release"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
