@@ -1,5 +1,7 @@
 from base import andar, esperar, girar, verificar_competicao
 
+CONFIGURADA = True
+
 
 def executar():
     print("SAIDA 1")
