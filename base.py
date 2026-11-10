@@ -110,13 +110,17 @@ def verificar_competicao():
     if _parada_solicitada:
         return False
 
-    if not _competicao_ativa:
-        return True
-
+    # CENTER e reconhecido antes, durante e depois da rodada.
     if Button.CENTER in hub.buttons.pressed():
         _parada_solicitada = True
         _motivo_fim = "BOTAO CENTRAL"
         print("RODADA INTERROMPIDA PELO BOTAO CENTRAL")
+        return False
+
+    if not _competicao_ativa:
+        return True
+
+    if _motivo_fim == "TEMPO ESGOTADO":
         return False
 
     if _relogio_competicao.time() >= TEMPO_COMPETICAO:
