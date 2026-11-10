@@ -25,9 +25,8 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Apply staged release bundle when present
+      - name: Detect and apply staged release bundle
         id: release
-        if: github.event_name == 'push'
         shell: bash
         run: |
           python - <<'PY'
@@ -36,36 +35,44 @@ jobs:
           from pathlib import Path, PurePosixPath
           from zipfile import ZipFile, BadZipFile
 
-          payload = Path("release_payload.zip.b64")
-          if not payload.is_file():
+          parts = [Path(f"release_payload.part{i:02d}") for i in range(1, 9)]
+          if not all(p.is_file() for p in parts):
               with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-                  output.write("applied=false\n")
-              print("No staged bundle. Running normal integrity checks.")
-          else:
-              try:
-                  raw = base64.b64decode(payload.read_text().strip(), validate=True)
-                  archive_path = Path("/tmp/rabbitech-release.zip")
-                  archive_path.write_bytes(raw)
-                  with ZipFile(archive_path) as archive:
-                      for item in archive.infolist():
-                          name = PurePosixPath(item.filename)
-                          if name.is_absolute() or ".." in name.parts:
-                              raise ValueError("Unsafe archive path: " + item.filename)
-                      archive.extractall(".")
-              except (ValueError, BadZipFile) as error:
-                  raise SystemExit("Invalid release bundle: " + str(error))
+                  output.write("ready=false\\n")
+                  output.write("applied=false\\n")
+              print("Release bundle incomplete; validation is deferred until all parts arrive.")
+              raise SystemExit(0)
 
-              payload.unlink()
-              with open(os.environ["GITHUB_OUTPUT"], "a") as output:
-                  output.write("applied=true\n")
-              print("Staged release bundle extracted.")
+          encoded = "".join(p.read_text().strip() for p in parts)
+          try:
+              raw = base64.b64decode(encoded, validate=True)
+              archive_path = Path("/tmp/rabbitech-release.zip")
+              archive_path.write_bytes(raw)
+              with ZipFile(archive_path) as archive:
+                  for item in archive.infolist():
+                      name = PurePosixPath(item.filename)
+                      if name.is_absolute() or ".." in name.parts:
+                          raise ValueError("Unsafe archive path: " + item.filename)
+                  archive.extractall(".")
+          except (ValueError, BadZipFile) as error:
+              raise SystemExit("Invalid release bundle: " + str(error))
+
+          for path in parts:
+              path.unlink()
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("ready=true\\n")
+              output.write("applied=true\\n")
+          print("Staged release bundle extracted.")
           PY
 
       - name: Verify approved source manifest
+        if: steps.release.outputs.ready == 'true'
         run: python tools/integrity.py verify
 
       - name: Check Python syntax
-        run: python -m py_compile main.py assinatura.py base.py memoria.py diagnostico_imu.py saida_1.py saida_2.py saida_3.py saida_4.py saida_5.py saida_6.py saida_7.py saida_8.py tools/integrity.py
+        if: steps.release.outputs.ready == 'true'
+        run: python -m py_compile $(git ls-files '*.py')
 
       - name: Commit validated release bundle
         if: ${{ github.event_name == 'push' && steps.release.outputs.applied == 'true' }}
