@@ -178,8 +178,10 @@ TIMEOUT_GIRO = 8000
 # O giro usa somente a IMU durante a manobra.
 # Nao existe pulso de calibracao antes do giro: ele deslocava o robo
 # aproximadamente 80 graus e depois zerava a leitura, escondendo o movimento.
-POTENCIA_MIN_GIRO = 6
-POTENCIA_MAX_GIRO = 18
+# Calibracao baseada nos testes fisicos do robo na mesa.
+# Abaixo de 20% os motores quase nao vencem o atrito inicial.
+POTENCIA_MIN_GIRO = 25
+POTENCIA_MAX_GIRO = 40
 SINAL_GIRO = 1
 
 # ==========================================
@@ -447,9 +449,15 @@ def giro_interno(angulo, velocidade=45):
         if restante > 35:
             potencia = limite_potencia
         elif restante > 15:
-            potencia = min(limite_potencia, 12)
+            potencia = max(
+                POTENCIA_MIN_GIRO,
+                int(limite_potencia * 0.75)
+            )
         elif restante > 5:
-            potencia = min(limite_potencia, 8)
+            potencia = max(
+                POTENCIA_MIN_GIRO,
+                int(limite_potencia * 0.60)
+            )
         else:
             potencia = POTENCIA_MIN_GIRO
 
