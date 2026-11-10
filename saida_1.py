@@ -12,12 +12,15 @@ def executar():
 
     girar(-48, 80)
 
-    andar(100, 100)
+    andar(85, 100)
 
     esperar(500)
-    garra_direita(256, 200)
-    garra_esquerda(200, 200)
-    andar(-150, 200)
+    garra_direita(360, 200)
+    andar(-100, 200)
+    garra_esquerda(458, 200)
+
+    garra_esquerda(60, 200)
+    andar(130, 200)
     giraR(90, 80)
 
     return True
