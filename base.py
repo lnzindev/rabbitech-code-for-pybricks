@@ -283,6 +283,9 @@ def velocidade_rampa(
 def mover_motor_supervisionado(motor, angulo, velocidade):
     # wait=False permite verificar CENTER e o limite de 150 s
     # enquanto a garra esta em movimento.
+    if not verificar_competicao():
+        return False
+
     motor.run_angle(velocidade, angulo, then=Stop.HOLD, wait=False)
 
     while not motor.done():
@@ -312,15 +315,19 @@ def garra_direita(angulo, velocidade=None):
 
 def abrir_garras():
 
-    garra_esquerda(-ANGULO_GARRA_ABERTA)
-    garra_direita(ANGULO_GARRA_ABERTA)
+    if not garra_esquerda(-ANGULO_GARRA_ABERTA):
+        return False
+    if not garra_direita(ANGULO_GARRA_ABERTA):
+        return False
     return True
 
 
 def fechar_garras():
 
-    garra_esquerda(ANGULO_GARRA_FECHADA)
-    garra_direita(-ANGULO_GARRA_FECHADA)
+    if not garra_esquerda(ANGULO_GARRA_FECHADA):
+        return False
+    if not garra_direita(-ANGULO_GARRA_FECHADA):
+        return False
     return True
 
 
