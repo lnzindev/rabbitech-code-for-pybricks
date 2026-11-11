@@ -179,7 +179,7 @@ def andar(distancia_mm):
 # Positivo = frente. Negativo = tras.
 andar(${d})
 `,
-turn:(a,s)=>`from pybricks.hubs import PrimeHub
+turn:(d,s,a)=>`from pybricks.hubs import PrimeHub
 from pybricks.parameters import Port, Direction
 from pybricks.pupdevices import Motor
 from pybricks.tools import wait
@@ -213,7 +213,7 @@ def girar(angulo, velocidade):
 # Positivo = direita. Negativo = esquerda.
 girar(${a}, ${s})
 `,
-claw:(a,s)=>`from pybricks.hubs import PrimeHub
+claw:(d,s,a,c)=>`from pybricks.hubs import PrimeHub
 from pybricks.parameters import Port, Stop
 from pybricks.pupdevices import Motor
 from pybricks.tools import wait
@@ -231,9 +231,9 @@ def mover_garra_direita(graus):
     garra_direita.run_angle(VELOCIDADE_GARRA, graus, then=Stop.HOLD)
 
 # Movimento pequeno para testar.
-mover_garra_esquerda(${a})
+mover_garra_esquerda(${c})
 wait(300)
-mover_garra_esquerda(-${a})
+mover_garra_esquerda(-${c})
 `,
 square:(d,s,a)=>`from pybricks.hubs import PrimeHub
 from pybricks.parameters import Port, Direction, Stop
