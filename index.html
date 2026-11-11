@@ -64,12 +64,44 @@ def executar():
 <div class="note warn"><b>O cronômetro de 150 segundos precisa ser ligado pelo controlador.</b><p>A base tem as funções do relógio, mas o main.py atual não inicia esse relógio. Então não conte com o limite de competição até essa ligação ser corrigida e testada.</p></div>
 <div class="note good"><b>Regra de ouro:</b> no começo, mexa apenas nas saídas com a orientação de alguém experiente. Não altere base.py nem main.py sem entender o que cada parte faz.</div>
 </div></section>
-<section><h2>Pequenos desafios para praticar</h2><p class="sub">Tente responder antes de abrir a resposta. Aprender é testar o que você entendeu.</p>
-<details class="task"><summary>Desafio 1 · O que faz print()?</summary><p>Resposta: mostra uma mensagem no console. Sozinho, não move nenhum motor.</p></details>
-<details class="task"><summary>Desafio 2 · O que significa andar(-100, 50)?</summary><p>Resposta: pede para andar 100 milímetros para trás, usando velocidade 50.</p></details>
-<details class="task"><summary>Desafio 3 · Quanto tempo é esperar(1000)?</summary><p>Resposta: 1.000 milissegundos, ou 1 segundo.</p></details>
-<details class="task"><summary>Desafio 4 · Para que serve girar(90, 45)?</summary><p>Resposta: pede um giro de 90 graus com velocidade 45. O sentido depende do sinal do ângulo.</p></details>
-<details class="task"><summary>Desafio 5 · Por que não devemos mudar base.py sem entender?</summary><p>Resposta: porque esse arquivo controla os motores, os giros, as garras e os sensores. Uma mudança errada pode fazer o robô se mover de um jeito inesperado.</p></details>
+<section id="laboratorio"><div class="eyebrow">LABORATÓRIO PRÁTICO · SPIKE PRIME</div><h2>Aprenda fazendo o robô se mexer</h2><p class="sub">Cada desafio ensina uma peça do programa. No final, você monta um quadrado usando as mesmas funções. Os exemplos são independentes de main.py e base.py: cada um já tem seus próprios imports e motores.</p>
+<div class="note good"><b>Como funciona:</b> escolha um desafio, entenda a explicação, ajuste os valores e veja o programa ser montado. Depois baixe o arquivo Python e abra no Pybricks Code para conectar ao Hub e executar.</div>
+<div class="panel">
+<div class="step-list" id="challenge-list">
+<div class="step"><div class="circle">1</div><div><b>Preparar o cérebro e as ferramentas</b><p>Aprenda os imports e crie o Hub e os motores nas portas certas.</p></div></div>
+<div class="step"><div class="circle">2</div><div><b>Fazer o robô andar</b><p>Transforme milímetros em graus de rotação das rodas.</p></div></div>
+<div class="step"><div class="circle">3</div><div><b>Fazer o robô girar</b><p>Use a IMU para acompanhar o ângulo do giro.</p></div></div>
+<div class="step"><div class="circle">4</div><div><b>Mexer uma garra</b><p>Comande os motores C e D com movimentos pequenos e controlados.</p></div></div>
+<div class="step"><div class="circle">5</div><div><b>Desenhar um quadrado</b><p>Junte andar e girar em uma sequência de quatro lados.</p></div></div>
+</div></div>
+<div class="grid" id="challenge-cards">
+<article class="card"><div class="num">DESAFIO 01</div><h3>Conheça as ferramentas</h3><p>Importar as peças do Pybricks, criar o Hub e preparar os quatro motores.</p><button class="small challenge-select" data-challenge="setup">Abrir desafio →</button></article>
+<article class="card"><div class="num">DESAFIO 02</div><h3>Andar para frente e para trás</h3><p>Escolha uma distância e uma velocidade. O robô transforma a distância em voltas das rodas.</p><button class="small challenge-select" data-challenge="move">Abrir desafio →</button></article>
+<article class="card"><div class="num">DESAFIO 03</div><h3>Girar para os lados</h3><p>Escolha o ângulo e observe a IMU ajudar o robô a chegar perto do giro pedido.</p><button class="small challenge-select" data-challenge="turn">Abrir desafio →</button></article>
+<article class="card"><div class="num">DESAFIO 04</div><h3>Levantar e baixar a garra</h3><p>Teste movimentos curtos nos motores das garras. Ajuste o sentido conforme a montagem física.</p><button class="small challenge-select" data-challenge="claw">Abrir desafio →</button></article>
+<article class="card"><div class="num">DESAFIO FINAL</div><h3>Desenhar um quadrado</h3><p>Quatro lados, quatro giros. Personalize o tamanho e a velocidade do percurso.</p><button class="small challenge-select" data-challenge="square">Montar o quadrado →</button></article>
+</div>
+<div class="panel" id="challenge-workspace">
+<div class="eyebrow" id="challenge-tag">DESAFIO 01</div><h2 id="challenge-title">Conheça as ferramentas</h2><p class="sub" id="challenge-description">Antes de mandar o robô andar, precisamos apresentar as ferramentas e dizer em quais portas os motores estão conectados.</p>
+<div class="grid" id="challenge-controls">
+<div class="card"><label for="distance">Distância (mm)</label><input id="distance" class="search" type="number" min="20" max="1000" step="10" value="120"></div>
+<div class="card"><label for="speed">Velocidade (graus/s)</label><input id="speed" class="search" type="number" min="50" max="500" step="10" value="180"></div>
+<div class="card"><label for="angle">Ângulo do giro (graus)</label><input id="angle" class="search" type="number" min="15" max="180" step="5" value="90"></div>
+<div class="card"><label for="clawAngle">Movimento da garra (graus)</label><input id="clawAngle" class="search" type="number" min="10" max="90" step="5" value="30"></div>
+</div>
+<div class="note" id="challenge-tip"><b>O que aprender:</b> import é como pegar as ferramentas antes de começar. PrimeHub representa o Hub SPIKE Prime e Motor representa cada motor conectado.</div>
+<div class="viewer-head"><b>Seu programa Python</b><div><button class="small" id="copy-challenge">Copiar código</button> <button class="primary" id="download-challenge">Preparar para executar ↗</button></div></div>
+<div class="codebox"><pre><code id="challenge-code"></code></pre></div>
+<div class="note warn" id="run-notice"><b>Importante:</b> o site monta e baixa o programa, mas não consegue comandar o Hub diretamente nesta página. Para executar, abra o Pybricks Code, conecte o SPIKE Prime por Bluetooth e rode o arquivo. Não vamos fingir que o botão mexeu no robô quando ele só baixou um arquivo.</div>
+<div class="actions"><a class="secondary" href="https://code.pybricks.com/" target="_blank" rel="noopener">Abrir Pybricks Code ↗</a><a class="secondary" href="https://docs.pybricks.com/en/v3.6.1/" target="_blank" rel="noopener">Manual Pybricks 3.6.1 ↗</a></div>
+</div>
+<div class="panel"><h2>Antes de executar no robô</h2><div class="step-list">
+<div class="step"><div class="circle">1</div><div><b>Confira as portas</b><p>C e D são as garras; E e F são as rodas. O Hub precisa estar com firmware Pybricks e a montagem igual à configuração documentada.</p></div></div>
+<div class="step"><div class="circle">2</div><div><b>Deixe espaço livre</b><p>Coloque o robô no chão, longe de mesas, escadas, pessoas e objetos frágeis. Comece com valores pequenos.</p></div></div>
+<div class="step"><div class="circle">3</div><div><b>Conecte pelo Pybricks Code</b><p>Abra o editor oficial, ligue o Hub, use o botão Bluetooth para conectar e abra o arquivo Python baixado.</p></div></div>
+<div class="step"><div class="circle">4</div><div><b>Execute e observe</b><p>Se o robô andar para trás quando deveria ir para frente, pare e peça ajuda para conferir os sentidos dos motores. Não troque portas no chute.</p></div></div>
+</div></div>
+</section>
 <footer>RABBITECH · Aprender um passo de cada vez.<br><a href="https://github.com/lnzindev/rabbitech-code-for-pybricks" target="_blank" rel="noopener">Ver todos os arquivos no GitHub</a></footer>
 </main>
 <script>
@@ -95,4 +127,183 @@ document.getElementById('search').addEventListener('input',e=>{if(!current||!cac
 document.getElementById('copy').onclick=async()=>{if(!current||!cache[current])return;try{await navigator.clipboard.writeText(cache[current]);document.getElementById('copy').textContent='Copiado ✓';setTimeout(()=>document.getElementById('copy').textContent='Copiar código',1200)}catch(e){document.getElementById('copy').textContent='Não foi possível copiar'}};
 document.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth'}));document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.scroll).scrollIntoView({behavior:'smooth'}));
 load('saida_1.py');
+
+const lessonCode={
+setup:()=>`from pybricks.hubs import PrimeHub
+from pybricks.parameters import Port, Direction
+from pybricks.pupdevices import Motor
+
+# O Hub e o cerebro do robo.
+hub = PrimeHub()
+
+# Motores de tracao: rodas esquerda e direita.
+roda_esquerda = Motor(Port.E, Direction.COUNTERCLOCKWISE)
+roda_direita = Motor(Port.F, Direction.CLOCKWISE)
+
+# Motores das garras.
+garra_esquerda = Motor(Port.C)
+garra_direita = Motor(Port.D)
+
+# Por enquanto, apenas preparamos tudo.
+hub.display.text("OLA!")
+`,
+move:(d,s)=>`from pybricks.hubs import PrimeHub
+from pybricks.parameters import Port, Direction, Stop
+from pybricks.pupdevices import Motor
+from pybricks.tools import wait
+
+hub = PrimeHub()
+roda_esquerda = Motor(Port.E, Direction.COUNTERCLOCKWISE)
+roda_direita = Motor(Port.F, Direction.CLOCKWISE)
+
+DIAMETRO_RODA = 56  # milimetros
+VELOCIDADE = ${s}  # graus por segundo
+
+def parar():
+    roda_esquerda.hold()
+    roda_direita.hold()
+
+def andar(distancia_mm):
+    # Converte distancia em graus de giro da roda.
+    graus = distancia_mm * 360 / (3.14159 * DIAMETRO_RODA)
+
+    roda_esquerda.run_angle(VELOCIDADE, graus, then=Stop.HOLD, wait=False)
+    roda_direita.run_angle(VELOCIDADE, graus, then=Stop.HOLD, wait=False)
+
+    # Espera as duas rodas terminarem.
+    while not roda_esquerda.done() or not roda_direita.done():
+        wait(10)
+
+    parar()
+
+# Positivo = frente. Negativo = tras.
+andar(${d})
+`,
+turn:(a,s)=>`from pybricks.hubs import PrimeHub
+from pybricks.parameters import Port, Direction
+from pybricks.pupdevices import Motor
+from pybricks.tools import wait
+
+hub = PrimeHub()
+roda_esquerda = Motor(Port.E, Direction.COUNTERCLOCKWISE)
+roda_direita = Motor(Port.F, Direction.CLOCKWISE)
+
+def parar():
+    roda_esquerda.hold()
+    roda_direita.hold()
+
+def girar(angulo, velocidade):
+    # A IMU mede quanto o robo ja virou.
+    hub.imu.reset_heading(0)
+    alvo = angulo
+
+    # No projeto Rabbitech, heading positivo e giro horario.
+    sentido = 1 if alvo > 0 else -1
+    potencia = min(55, max(30, abs(velocidade)))
+
+    while abs(alvo - hub.imu.heading()) > 2:
+        erro = alvo - hub.imu.heading()
+        comando = potencia if erro > 0 else -potencia
+        roda_esquerda.run(comando)
+        roda_direita.run(-comando)
+        wait(10)
+
+    parar()
+
+# Positivo = direita. Negativo = esquerda.
+girar(${a}, ${s})
+`,
+claw:(a,s)=>`from pybricks.hubs import PrimeHub
+from pybricks.parameters import Port, Stop
+from pybricks.pupdevices import Motor
+from pybricks.tools import wait
+
+hub = PrimeHub()
+garra_esquerda = Motor(Port.C)
+garra_direita = Motor(Port.D)
+
+VELOCIDADE_GARRA = min(200, max(60, ${s}))
+
+def mover_garra_esquerda(graus):
+    garra_esquerda.run_angle(VELOCIDADE_GARRA, graus, then=Stop.HOLD)
+
+def mover_garra_direita(graus):
+    garra_direita.run_angle(VELOCIDADE_GARRA, graus, then=Stop.HOLD)
+
+# Movimento pequeno para testar.
+mover_garra_esquerda(${a})
+wait(300)
+mover_garra_esquerda(-${a})
+`,
+square:(d,s,a)=>`from pybricks.hubs import PrimeHub
+from pybricks.parameters import Port, Direction, Stop
+from pybricks.pupdevices import Motor
+from pybricks.tools import wait
+
+hub = PrimeHub()
+roda_esquerda = Motor(Port.E, Direction.COUNTERCLOCKWISE)
+roda_direita = Motor(Port.F, Direction.CLOCKWISE)
+
+DIAMETRO_RODA = 56
+VELOCIDADE = ${s}
+
+def parar():
+    roda_esquerda.hold()
+    roda_direita.hold()
+
+def andar(distancia_mm):
+    graus = distancia_mm * 360 / (3.14159 * DIAMETRO_RODA)
+    roda_esquerda.run_angle(VELOCIDADE, graus, then=Stop.HOLD, wait=False)
+    roda_direita.run_angle(VELOCIDADE, graus, then=Stop.HOLD, wait=False)
+    while not roda_esquerda.done() or not roda_direita.done():
+        wait(10)
+    parar()
+
+def girar(angulo):
+    hub.imu.reset_heading(0)
+    alvo = angulo
+    while abs(alvo - hub.imu.heading()) > 2:
+        erro = alvo - hub.imu.heading()
+        comando = 45 if erro > 0 else -45
+        roda_esquerda.run(comando)
+        roda_direita.run(-comando)
+        wait(10)
+    parar()
+    wait(150)
+
+# Um quadrado tem quatro lados e quatro cantos.
+for lado in range(4):
+    andar(${d})
+    girar(${a})
+
+hub.display.text("FIM!")
+`
+};
+const challengeMeta={
+setup:["DESAFIO 01","Conheça as ferramentas","Primeiro importamos as peças, criamos o Hub e ligamos cada motor à porta correta.","Import é como pegar as ferramentas antes de começar. Port.E e Port.F são as rodas; Port.C e Port.D são as garras."],
+move:["DESAFIO 02","Faça o robô andar","Escolha quantos milímetros ele deve andar. Um número positivo manda para frente; negativo manda para trás.","As rodas têm 56 mm. O programa converte a distância em graus de rotação. Comece com 100 ou 120 mm e velocidade baixa."],
+turn:["DESAFIO 03","Faça o robô girar","Escolha um ângulo. Positivo tenta girar para a direita; negativo tenta girar para a esquerda.","A IMU funciona como uma bússola interna: ela informa quanto o Hub virou. O sentido precisa ser conferido no primeiro teste físico."],
+claw:["DESAFIO 04","Mexa a garra","O motor C controla a garra esquerda. Um valor positivo e depois negativo faz um pequeno movimento de ida e volta.","O sentido de abrir e fechar depende de como a garra foi montada. Use poucos graus no primeiro teste e mantenha os dedos longe das peças."],
+square:["DESAFIO FINAL","Desenhe um quadrado","O robô anda um lado, gira, repete quatro vezes e termina no ponto aproximado de partida.","Um quadrado tem quatro lados iguais e quatro giros de 90 graus. O resultado real depende do piso, das rodas e da calibração do giro."]
+};
+let selectedChallenge="setup";
+function updateChallenge(){
+ const d=Math.max(20,Math.min(1000,Number(document.getElementById("distance").value)||120));
+ const s=Math.max(50,Math.min(500,Number(document.getElementById("speed").value)||180));
+ const a=Math.max(15,Math.min(180,Number(document.getElementById("angle").value)||90));
+ const c=Math.max(10,Math.min(90,Number(document.getElementById("clawAngle").value)||30));
+ const meta=challengeMeta[selectedChallenge];
+ document.getElementById("challenge-tag").textContent=meta[0];
+ document.getElementById("challenge-title").textContent=meta[1];
+ document.getElementById("challenge-description").textContent=meta[2];
+ document.getElementById("challenge-tip").innerHTML="<b>O que aprender:</b> "+meta[3];
+ document.getElementById("challenge-code").textContent=lessonCode[selectedChallenge](d,s,a,c);
+ document.querySelectorAll(".challenge-select").forEach(b=>b.classList.toggle("active",b.dataset.challenge===selectedChallenge));
+}
+document.querySelectorAll(".challenge-select").forEach(b=>b.addEventListener("click",()=>{selectedChallenge=b.dataset.challenge;updateChallenge();document.getElementById("challenge-workspace").scrollIntoView({behavior:"smooth",block:"start"})}));
+["distance","speed","angle","clawAngle"].forEach(id=>document.getElementById(id).addEventListener("input",updateChallenge));
+document.getElementById("copy-challenge").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(document.getElementById("challenge-code").textContent);document.getElementById("copy-challenge").textContent="Copiado ✓";setTimeout(()=>document.getElementById("copy-challenge").textContent="Copiar código",1400)}catch(e){document.getElementById("copy-challenge").textContent="Falha ao copiar"}});
+document.getElementById("download-challenge").addEventListener("click",()=>{const blob=new Blob([document.getElementById("challenge-code").textContent],{type:"text/x-python;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="rabbitech_"+selectedChallenge+".py";a.click();URL.revokeObjectURL(url);window.open("https://code.pybricks.com/","_blank","noopener")});
+updateChallenge();
+
 </script></body></html>
