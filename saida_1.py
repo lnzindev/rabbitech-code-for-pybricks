@@ -8,7 +8,7 @@ def executar():
 
     andar(780, 600)
 
-    esperar(100)
+    esperar(101)
 
     girar(-38, 80)
 
