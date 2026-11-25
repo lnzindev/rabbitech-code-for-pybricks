@@ -1,15 +1,19 @@
+
 # ==========================================
 # RABBITECH - CONTROLADOR SEQUENCIAL
 # Pybricks MicroPython 3.6.1
-# Execute SOMENTE este arquivo.
-# Os hashes são verificados no processo de publicação; o Hub não oferece
-# leitura portátil dos arquivos-fonte instalados para validação runtime.
 # ==========================================
 
 from pybricks.parameters import Button
 from pybricks.tools import wait
 
-from base import hub, parar, esperar_imu
+from base import (
+    hub,
+    parar,
+    parar_todos,
+    esperar_imu,
+    verificar_competicao
+)
 
 from saida_1 import executar as programa1
 from saida_2 import executar as programa2
@@ -26,7 +30,6 @@ from saida_8 import executar as programa8
 # ==========================================
 
 SAIDAS = [
-   
     ("SAIDA 1", programa1),
     ("SAIDA 2", programa2),
     ("SAIDA 3", programa3),
@@ -38,87 +41,141 @@ SAIDAS = [
 ]
 
 
-
 # ==========================================
 # ESPERAR BOTAO ESQUERDO
 # ==========================================
 
 def esperar_botao_esquerdo():
 
-    # Esperar o botao ser solto
+    # Esperar botao soltar
     while Button.LEFT in hub.buttons.pressed():
+
+        if not verificar_competicao():
+            return False
+
         wait(10)
 
-    # Esperar um novo aperto
+    # Esperar novo aperto
     while Button.LEFT not in hub.buttons.pressed():
+
+        if not verificar_competicao():
+            return False
+
         wait(10)
 
     # Esperar soltar novamente
     while Button.LEFT in hub.buttons.pressed():
+
+        if not verificar_competicao():
+            return False
+
         wait(10)
+
+    return verificar_competicao()
 
 
 # ==========================================
 # INICIAR CONTROLADOR
 # ==========================================
 
-esperar_imu()
-parar()
+print("RABBITECH - INICIANDO")
 
-numero = 1
-falhou = False
 
-# ==========================================
-# EXECUTAR SAIDAS EM SEQUENCIA
-# ==========================================
 
-for item in SAIDAS:
+if not esperar_imu():
 
-    nome = item[0]
-    programa = item[1]
+    parar_todos()
 
-    # Mostrar numero da saida
-    hub.display.number(numero)
+    hub.display.text("IMU ERRO")
 
-    print("AGUARDANDO SAIDA", numero, nome)
+    print("ERRO NA INICIALIZACAO DA IMU")
 
-    # Esperar aperto do botao esquerdo
-    esperar_botao_esquerdo()
+else:
 
     parar()
 
-    print("EXECUTANDO:", nome)
+    numero = 1
+    falhou = False
+    interrompido = False
 
-    # Executar programacao individual
-    resultado = programa()
+    # ======================================
+    # EXECUTAR SAIDAS EM SEQUENCIA
+    # ======================================
 
-    parar()
+    for nome, programa in SAIDAS:
 
-    # Verificar se ocorreu uma falha
-    if resultado is False:
+        if not verificar_competicao():
+            interrompido = True
+            break
+
+        hub.display.number(numero)
+
+        print("AGUARDANDO:", nome)
+
+        if not esperar_botao_esquerdo():
+
+            interrompido = True
+            break
+
+        parar()
+
+        if not verificar_competicao():
+
+            interrompido = True
+            break
+
+        print("EXECUTANDO:", nome)
+
+        try:
+
+            resultado = programa()
+
+        except Exception as erro:
+
+            print("ERRO NA", nome, ":", erro)
+
+            resultado = False
+
+        parar()
+
+        if resultado is False:
+
+            hub.display.text("ERRO")
+
+            print("SAIDA INTERROMPIDA:", nome)
+
+            falhou = True
+            break
+
+        if not verificar_competicao():
+
+            interrompido = True
+            break
+
+        print("SAIDA CONCLUIDA:", nome)
+
+        numero += 1
+
+    # ======================================
+    # FINALIZAR CONTROLADOR
+    # ======================================
+
+    parar_todos()
+
+    if falhou:
 
         hub.display.text("ERRO")
 
-        print("SAIDA INTERROMPIDA:", nome)
+        print("CONTROLADOR INTERROMPIDO POR FALHA")
 
-        falhou = True
-        break
+    elif interrompido:
 
-    print("SAIDA CONCLUIDA:", nome)
+        
 
-    numero += 1
+        print("CONTROLADOR INTERROMPIDO")
 
+    else:
 
-# ==========================================
-# FINALIZAR CONTROLADOR
-# ==========================================
+        hub.display.text("FIM")
 
-parar()
-
-if falhou:
-    hub.display.text("ERRO")
-    print("CONTROLADOR INTERROMPIDO")
-
-else:
-    hub.display.text("FIM")
-    print("TODAS AS SAIDAS FINALIZADAS")
+        print("TODAS AS SAIDAS FINALIZADAS")
